@@ -1,0 +1,1393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Interview Prep Tracker</title>
+<meta name="description" content="Study the interview questions in this repo and track your progress per topic. No account needed.">
+<meta name="theme-color" content="#2f6fde">
+<script>/* track colour: green for Android, blue for iOS, purple for System Design */ const tc = /^\/Android/i.test(location.pathname) ? "#1f9d55" : /^\/System-Design/i.test(location.pathname) ? "#7c3aed" : ""; if (tc) document.querySelector('meta[name="theme-color"]').content = tc;</script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script src="tracker-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<style>
+:root {
+  --bg: #f7f7f5; --surface: #ffffff; --surface-2: #f0f0ed; --text: #1c1c1a; --muted: #6b6b66;
+  --border: #e2e2dd; --accent: #2f6fde; --accent-bg: #e8f0fd; --done: #1f9d55; --done-bg: #e5f5ec;
+  --revise: #b86b12; --revise-bg: #fbf0e1; --danger: #c43d3d; --code-bg: #f3f3f0; --bar-bg: #e7e7e2;
+  --shadow: 0 1px 2px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131312; --surface: #1c1c1b; --surface-2: #252523; --text: #ececea; --muted: #9c9c96;
+    --border: #2f2f2c; --accent: #6c9cf0; --accent-bg: #1c2a42; --done: #4cc184; --done-bg: #1b3326;
+    --revise: #e3a04f; --revise-bg: #3a2a16; --danger: #ef7676; --code-bg: #232321; --bar-bg: #2c2c29; --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131312; --surface: #1c1c1b; --surface-2: #252523; --text: #ececea; --muted: #9c9c96;
+  --border: #2f2f2c; --accent: #6c9cf0; --accent-bg: #1c2a42; --done: #4cc184; --done-bg: #1b3326;
+  --revise: #e3a04f; --revise-bg: #3a2a16; --danger: #ef7676; --code-bg: #232321; --bar-bg: #2c2c29; --shadow: none;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); border: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.wrap { max-width: 880px; margin: 0 auto; padding: 20px 16px 80px; }
+header.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+header.top h1 { font-size: 1.3rem; margin: 0; }
+header.top h1 a { color: var(--text); }
+.brand { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.switcher { display: inline-flex; border: 1px solid var(--border); border-radius: 99px; padding: 3px; background: var(--surface); }
+.switcher > a, .switcher > span { font-size: .85rem; padding: 4px 10px; min-width: 76px; white-space: nowrap; text-align: center; border-radius: 99px; color: var(--muted); }
+.short { display: none; }
+.switcher a:hover { color: var(--text); text-decoration: none; }
+.switcher > [aria-current="page"] { background: var(--text); color: var(--bg); font-weight: 600; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+button, .btn { font: inherit; font-size: .88rem; border: 1px solid var(--border); background: var(--surface);
+  color: var(--text); border-radius: 8px; padding: 6px 12px; cursor: pointer; display: inline-block; }
+button:hover, .btn:hover { border-color: var(--muted); text-decoration: none; }
+button:disabled { opacity: .6; cursor: default; }
+.primary { background: var(--accent) !important; color: #fff !important; border-color: var(--accent) !important; }
+.linkish { background: none; border: none; color: var(--accent); padding: 0; font-size: .88rem; }
+.danger { color: var(--danger); }
+.chip { border-radius: 99px; font-size: .82rem; }
+.chip.synced { border-color: var(--done); color: var(--done); }
+.chip.warn { border-color: var(--revise); color: var(--revise); }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; box-shadow: var(--shadow); }
+.notice { background: var(--accent-bg); border-color: transparent; margin-bottom: 16px; }
+.notice h2 { font-size: 1.05rem; margin: 0 0 6px; }
+.notice p { margin: 0 0 12px; }
+.row-btns { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.summary { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; margin-bottom: 20px; }
+.big { font-size: 2rem; font-weight: 700; line-height: 1.1; }
+.muted { color: var(--muted); }
+.small { font-size: .85rem; }
+.bar { height: 8px; background: var(--bar-bg); border-radius: 99px; overflow: hidden; display: flex; }
+.bar > .d { background: var(--done); }
+.bar > .r { background: var(--revise); }
+.stats { display: flex; gap: 14px; flex-wrap: wrap; font-size: .88rem; margin-top: 8px; }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+input[type=search], input[type=email], input[type=password], input[type=text] {
+  width: 100%; font: inherit; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text); }
+.search-wrap { position: relative; margin-bottom: 18px; }
+.search-wrap input { padding-left: 38px; padding-right: 44px; }
+.search-wrap .icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+.search-wrap kbd { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font: .75rem ui-monospace, Menlo, monospace;
+  color: var(--muted); border: 1px solid var(--border); border-radius: 5px; padding: 1px 6px; pointer-events: none; }
+.search-wrap input:focus + kbd, .search-wrap input:not(:placeholder-shown) + kbd { display: none; }
+.snippet { font-size: .88rem; color: var(--muted); padding-left: calc(2.2em + 10px); margin-top: 6px; }
+mark { background: var(--revise-bg); color: inherit; border-radius: 3px; padding: 0 2px; }
+@media (hover: none) { .search-wrap kbd { display: none; } }
+label { display: block; font-size: .88rem; font-weight: 600; margin: 12px 0 4px; }
+h2.cat { font-size: 1.02rem; margin: 26px 0 10px; }
+.topics { display: grid; gap: 10px; }
+.topic { display: block; color: var(--text); }
+.topic:hover { text-decoration: none; border-color: var(--accent); }
+.topic .row { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; margin-bottom: 6px; }
+.topic .name { font-weight: 600; }
+.topic .areas { font-size: .82rem; color: var(--muted); margin-top: 6px; }
+.complete { color: var(--done); font-weight: 600; }
+.crumbs { margin-bottom: 10px; font-size: .9rem; }
+#crumb-slot .crumbs { margin: -4px 0 12px; }
+#crumb-slot .crumbs a { display: inline-block; padding: 4px 0; font-weight: 600; }
+.topic-head h2 { margin: 0 0 4px; font-size: 1.4rem; }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; margin: 16px 0; }
+.filters button[aria-pressed="true"], .tabs button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+h3.section { font-size: .95rem; color: var(--muted); margin: 22px 0 8px; }
+.q { margin-bottom: 10px; scroll-margin-top: 16px; }
+.q.done { border-left: 4px solid var(--done); }
+.q.revise { border-left: 4px solid var(--revise); }
+.q.focus { outline: 2px solid var(--accent); }
+.q .qt { display: flex; gap: 10px; align-items: flex-start; }
+.q .num { color: var(--muted); font-variant-numeric: tabular-nums; min-width: 2.2em; }
+.q .title { flex: 1; min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
+.listen-btn { flex-shrink: 0; border: none; background: none; padding: 2px 6px; font-size: 1.05rem; line-height: 1; border-radius: 6px; color: var(--muted); }
+.listen-btn:hover { background: var(--surface-2); }
+.q.speaking { outline: 2px solid var(--accent); }
+.q.speaking .listen-btn { color: var(--accent); }
+.start-panel { margin: -6px 0 16px; }
+.start-panel h3 { font-size: .95rem; margin: 0 0 10px; }
+.start-panel select { width: 100%; font: inherit; font-size: .9rem; padding: 9px 10px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text); min-width: 0; }
+.start-panel .pick { display: flex; gap: 8px; margin-top: 10px; }
+.start-panel .pick select { flex: 1; }
+.player { position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); width: min(560px, calc(100vw - 20px));
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 10px 12px; z-index: 20;
+  box-shadow: 0 6px 24px rgba(0,0,0,.25); display: flex; flex-direction: column; gap: 10px; max-height: 80vh; overflow-y: auto; }
+.player-main { display: flex; align-items: center; gap: 10px; }
+.player-settings { border-top: 1px dashed var(--border); padding-top: 10px; display: grid; gap: 10px; }
+.player-settings label { margin: 0; font-size: .82rem; display: grid; gap: 4px; }
+.player-settings select { font: inherit; font-size: .88rem; padding: 7px 8px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text); width: 100%; min-width: 0; }
+.player-settings .two { display: grid; grid-template-columns: 1fr 110px; gap: 10px; }
+.player-settings p { margin: 0; font-size: .8rem; color: var(--muted); }
+#player-voice[aria-expanded="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.player .now { flex: 1; min-width: 0; font-size: .85rem; }
+.player .now b, .player .now span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.player .ctrls { display: flex; gap: 6px; flex-shrink: 0; }
+.player button { padding: 6px 10px; min-width: 40px; }
+body.playing .toast { bottom: 96px; }
+body.playing .wrap { padding-bottom: 120px; }
+.q .title code { font-size: .88em; }
+.q .actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; padding-left: calc(2.2em + 10px); }
+.q .actions .done-btn[aria-pressed="true"] { background: var(--done-bg); color: var(--done); border-color: var(--done); }
+.q .actions .rev-btn[aria-pressed="true"] { background: var(--revise-bg); color: var(--revise); border-color: var(--revise); }
+.q .src { font-size: .8rem; color: var(--muted); padding-left: calc(2.2em + 10px); margin-top: 4px; }
+.answer { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); overflow-wrap: anywhere; }
+.answer :first-child { margin-top: 0; }
+.answer pre { background: var(--code-bg); padding: 12px; border-radius: 8px; overflow-x: auto; font-size: .85rem; line-height: 1.45; }
+.answer code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; font-size: .9em; }
+.answer pre code { background: none; padding: 0; }
+.answer table { border-collapse: collapse; width: 100%; font-size: .88rem; display: block; overflow-x: auto; }
+.answer th, .answer td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; vertical-align: top; }
+.answer th { background: var(--surface-2); }
+.answer table { overflow-wrap: normal; word-break: normal; }
+.answer th, .answer td { min-width: 84px; }
+.answer th:first-child, .answer td:first-child { min-width: 72px; }
+.diagram { margin: 14px 0; overflow-x: auto; text-align: center; background: var(--surface-2); border-radius: 10px; padding: 10px; color: var(--muted); font-size: .85rem; }
+.diagram svg { height: auto; }
+.diagram.rendered { cursor: zoom-in; text-align: left; }
+.diagram .diagram-scroll { overflow-x: auto; display: flex; justify-content: center; }
+.diagram .diagram-scroll svg { flex-shrink: 0; }
+.diagram .diagram-scroll.wide { justify-content: flex-start; }
+.diagram-hint { display: block; margin-top: 6px; font-size: .75rem; color: var(--muted); text-align: center; }
+.diagram-zoom { position: fixed; inset: 0; z-index: 50; background: var(--bg); display: flex; flex-direction: column; }
+.diagram-zoom header { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+.diagram-zoom .zoom-body { flex: 1; overflow: auto; padding: 16px; touch-action: pan-x pan-y pinch-zoom; }
+.diagram-zoom .zoom-body svg { display: block; margin: 0 auto; }
+.answer blockquote { margin: 0; padding-left: 12px; border-left: 3px solid var(--border); color: var(--muted); }
+.pager { display: flex; justify-content: space-between; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+.empty { text-align: center; padding: 30px; color: var(--muted); }
+.account section { margin-bottom: 16px; }
+.account h2 { font-size: 1.1rem; margin: 0 0 6px; }
+.tabs { display: flex; gap: 6px; margin: 12px 0 4px; }
+.pw-wrap { position: relative; }
+.pw-wrap input { padding-right: 64px; }
+.pw-wrap button { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); padding: 3px 8px; font-size: .8rem; }
+.form-msg { font-size: .88rem; margin-top: 10px; min-height: 1.2em; }
+.form-msg.error { color: var(--danger); }
+.form-msg.ok { color: var(--done); }
+.toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--text); color: var(--bg);
+  padding: 8px 14px; border-radius: 8px; font-size: .9rem; opacity: 0; transition: opacity .2s; pointer-events: none; max-width: 90vw; }
+.toast.show { opacity: 1; }
+footer { margin-top: 40px; font-size: .82rem; color: var(--muted); text-align: center; }
+@media (max-width: 520px) { .summary { grid-template-columns: 1fr; } .big { font-size: 1.7rem; } }
+/* Phones: compact two-row header, un-indented card actions */
+@media (max-width: 560px) {
+  .wrap { padding: 14px 12px 60px; }
+  header.top { display: grid; grid-template-columns: auto 1fr auto auto; grid-template-areas: "title title title theme" "switch . revise chip";
+    gap: 10px 6px; align-items: center; margin-bottom: 14px; }
+  .brand, .tools { display: contents; }
+  header.top h1 { grid-area: title; font-size: 1.15rem; }
+  #track-switcher { grid-area: switch; }
+  #theme-btn { grid-area: theme; justify-self: end; }
+  #revise-link { grid-area: revise; }
+  #sync-chip { grid-area: chip; }
+  .switcher > a, .switcher > span { min-width: 0; padding: 4px 9px; font-size: .8rem; }
+  .long { display: none; }
+  .short { display: inline; }
+  .q .actions, .q .src, .snippet { padding-left: 0; }
+  .q .actions button { padding: 6px 10px; }
+  .card { padding: 14px 12px; }
+  .q .actions { gap: 5px; }
+  .player { gap: 8px; padding: 8px 10px; }
+  .player-main > span[aria-hidden] { display: none; }
+  .player .ctrls { gap: 4px; }
+  .player button { min-width: 36px; padding: 6px 8px; }
+}
+@media (max-width: 420px) { .rev-label { display: none; } #revise-link { padding-left: 10px; padding-right: 10px; } }
+@media (max-width: 360px) { .switcher > a, .switcher > span { padding: 4px 6px; } #sync-chip { white-space: nowrap; padding-left: 8px; padding-right: 8px; } header.top { gap: 10px 5px; } .switcher .short { display: none; } .q .actions button { padding: 6px 8px; font-size: .85rem; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1><a href="#/" id="site-title">Interview Prep Tracker</a></h1>
+      <nav class="switcher" id="track-switcher" aria-label="Choose track" hidden></nav>
+    </div>
+    <nav class="tools" aria-label="Main">
+      <a class="btn" id="revise-link" href="#/revise" aria-label="Revise list">↻<span class="rev-label"> Revise<span class="long"> list</span></span></a>
+      <a class="btn chip" id="sync-chip" href="#/account" hidden>Sign in to sync</a>
+      <button id="theme-btn" title="Toggle dark mode" aria-label="Toggle dark mode">◐</button>
+    </nav>
+  </header>
+  <div id="crumb-slot"></div>
+  <div class="search-wrap" role="search">
+    <span class="icon" aria-hidden="true">🔍</span>
+    <input type="search" id="global-search" placeholder="Search all questions and answers…" aria-label="Search all questions and answers" autocomplete="off">
+    <kbd aria-hidden="true">/</kbd>
+  </div>
+  <main id="app"><div class="empty">Loading questions…</div></main>
+  <footer>No account needed. Your progress is saved on this device<span id="footer-sync" hidden> ·
+    <a href="#/account">Sign in to sync across devices</a></span> · <a id="repo-link" href="./">View repo</a></footer>
+</div>
+<div class="player" id="player" hidden role="region" aria-label="Read aloud player">
+  <div class="player-main">
+    <span aria-hidden="true">🔊</span>
+    <div class="now"><span class="muted" id="player-pos"></span><b id="player-title"></b></div>
+    <div class="ctrls">
+      <button id="player-pause" aria-label="Pause">⏸</button>
+      <button id="player-next" aria-label="Next question">⏭</button>
+      <button id="player-voice" aria-label="Voice and speed settings" aria-expanded="false" aria-controls="player-settings">⚙</button>
+      <button id="player-stop" aria-label="Stop reading">✕</button>
+    </div>
+  </div>
+  <div class="player-settings" id="player-settings" hidden>
+    <div class="two">
+      <label>Voice <select id="voice-select"></select></label>
+      <label>Speed <select id="rate-select"></select></label>
+    </div>
+    <p id="voice-tip"></p>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+// ===================== Parsing & encoding (pure functions) =====================
+// PARSE-START
+function parseReadme(md) {
+  const lines = md.split("\n");
+  const title = (lines.find(l => /^# /.test(l)) || "# Interview Prep").replace(/^# /, "").trim();
+  const categories = [];
+  let current = null;
+  for (const line of lines) {
+    const cat = line.match(/^### (.+)$/);
+    if (cat) { current = { name: cat[1].trim(), topics: [] }; categories.push(current); continue; }
+    if (/^## /.test(line)) { current = null; continue; }
+    const row = line.match(/^\|\s*(\d+)\s*\|\s*\[([^\]]+)\]\((topics\/[^)]+\.md)\)\s*\|\s*\d+\s*\|\s*(.*?)\s*\|\s*$/);
+    if (row && current) current.topics.push({ num: row[1], name: row[2], file: row[3], areas: row[4] });
+  }
+  return { title, categories: categories.filter(c => c.topics.length) };
+}
+
+function parseTopic(md) {
+  const lines = md.split("\n");
+  const title = (lines.find(l => /^# /.test(l)) || "").replace(/^# /, "").trim();
+  const coversLine = lines.find(l => /^Covers:|^Many companies|^Interviewers/.test(l)) || "";
+  const questions = [];
+  let section = "", q = null, body = [];
+  const flush = () => {
+    if (!q) return;
+    const text = body.join("\n");
+    const start = text.indexOf("<summary>Answer</summary>");
+    const end = text.lastIndexOf("</details>");
+    q.answer = (start >= 0 && end > start) ? text.slice(start + "<summary>Answer</summary>".length, end).trim() : text.trim();
+    questions.push(q); q = null; body = [];
+  };
+  for (const line of lines) {
+    const qm = line.match(/^### (\d+)\. (.+)$/);
+    if (qm) { flush(); q = { n: Number(qm[1]), title: qm[2].trim(), section }; continue; }
+    const sm = line.match(/^## (.+)$/);
+    if (sm) { flush(); section = sm[1].trim(); continue; }
+    if (/^\[⬅/.test(line)) { flush(); continue; }
+    if (q) body.push(line);
+  }
+  flush();
+  return { title, covers: coversLine.replace(/^Covers:\s*/, ""), questions };
+}
+
+function questionKey(file, title) {
+  return file.replace(/^topics\//, "") + "::" + title.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+// Merge marks: per question, the most recent change (t) wins. Returns true if `into` changed.
+function mergeMarksInto(into, from) {
+  let changed = false;
+  for (const k in from) {
+    const r = from[k], l = into[k];
+    if (r && typeof r.t === "number" && (!l || r.t > l.t)) { into[k] = { s: r.s || "", t: r.t }; changed = true; }
+  }
+  return changed;
+}
+
+// PARSE-END
+
+// ===================== Local storage =====================
+const STORE = "iq-tracker::" + location.pathname.replace(/index\.html$/, "");
+const TRACKER_ID = (location.pathname.split("/").filter(Boolean)[0] || "local").replace(/\.html$/, "");
+function loadState() {
+  let s = null;
+  try { s = JSON.parse(localStorage.getItem(STORE)); } catch (e) {}
+  s = s || {};
+  if (!s.marks) {                       // migrate v1 format { status: {key: "done"} }
+    s.marks = {};
+    if (s.status) for (const k in s.status) s.marks[k] = { s: s.status[k], t: 0 };
+  }
+  delete s.status;
+  s.prefs = s.prefs || {};
+  return s;
+}
+let state = loadState();
+function saveState() {
+  try { localStorage.setItem(STORE, JSON.stringify(state)); }
+  catch (e) { toast("Couldn't save progress in this browser (storage is blocked)."); }
+}
+const getMark = k => (state.marks[k] && state.marks[k].s) || "";
+
+let persistAsked = false;
+function requestPersistentStorage() {
+  if (persistAsked || !navigator.storage || !navigator.storage.persist) return;
+  persistAsked = true;
+  navigator.storage.persist().catch(() => {});
+}
+
+// ===================== Theme =====================
+(function initTheme() {
+  let t = null; try { t = localStorage.getItem("iq-theme"); } catch (e) {}
+  if (t) document.documentElement.dataset.theme = t;
+  document.getElementById("theme-btn").onclick = () => {
+    const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+    const cur = document.documentElement.dataset.theme || (dark ? "dark" : "light");
+    const next = cur === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem("iq-theme", next); } catch (e) {}
+    if (window.rerenderDiagrams) window.rerenderDiagrams();
+  };
+})();
+
+// ===================== Data loading =====================
+let site = null;
+const topics = {};
+let topicOrder = [];
+let shortTitle = "Interview Prep";
+
+// Sibling trackers hosted on the same GitHub Pages site (same origin → sign-in is shared).
+const TRACKS = [
+  { name: "Android", repo: "Android-Interview-Questions-cheat-sheet" },
+  { name: "iOS", repo: "iOS-Interview-Questions-cheat-sheet" },
+  { name: "System Design", label: '<span class="long">System</span><span class="short">Sys</span> Design', repo: "System-Design-Interview-Questions-cheat-sheet" }
+];
+function renderSwitcher() {
+  const el = document.getElementById("track-switcher");
+  const current = TRACKS.find(t => t.repo === TRACKER_ID) || TRACKS.find(t => site && site.title.startsWith(t.name));
+  if (!current) return;
+  const base = location.hostname.endsWith("github.io") ? "/" : "https://akshayashokcode.github.io/";
+  el.innerHTML = TRACKS.map(t => t === current
+    ? `<span aria-current="page">${t.label || esc(t.name)}</span>`
+    : `<a href="${base}${t.repo}/" title="Switch to the ${esc(t.name)} tracker">${t.label || esc(t.name)}</a>`).join("");
+  el.hidden = false;
+  // In an installed (home-screen) app, switch tracks with a script navigation so iOS keeps it inside the app.
+  const standalone = navigator.standalone || matchMedia("(display-mode: standalone)").matches;
+  if (standalone) el.querySelectorAll("a").forEach(a => a.onclick = e => { e.preventDefault(); location.href = a.href; });
+}
+
+async function loadAll() {
+  const res = await fetch("README.md", { cache: "no-cache" });
+  if (!res.ok) throw new Error("Couldn't load README.md");
+  site = parseReadme(await res.text());
+  topicOrder = site.categories.flatMap(c => c.topics).sort((a, b) => Number(a.num) - Number(b.num));
+  shortTitle = site.title.replace(/ – Cheat Sheet$/, "").replace(/ Questions$/, "");
+  // Same heading on every track so the Android | iOS toggle never shifts; the tab title names the track.
+  document.title = shortTitle + " Tracker";
+  renderSwitcher();
+  await Promise.all(topicOrder.map(async t => {
+    const r = await fetch(t.file, { cache: "no-cache" });
+    topics[t.file] = r.ok ? parseTopic(await r.text()) : { title: t.name, covers: "", questions: [] };
+    t.questions = topics[t.file].questions;
+  }));
+}
+
+// ===================== Helpers =====================
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const inline = s => marked.parseInline(s);
+function topicStats(file) {
+  const qs = (topics[file] || { questions: [] }).questions;
+  let done = 0, revise = 0;
+  for (const q of qs) { const s = getMark(questionKey(file, q.title)); if (s === "done") done++; else if (s === "revise") revise++; }
+  return { total: qs.length, done, revise };
+}
+function allStats() {
+  let total = 0, done = 0, revise = 0;
+  for (const t of topicOrder) { const s = topicStats(t.file); total += s.total; done += s.done; revise += s.revise; }
+  return { total, done, revise };
+}
+function bar(st) {
+  const d = st.total ? (st.done / st.total * 100) : 0, r = st.total ? (st.revise / st.total * 100) : 0;
+  return `<div class="bar" role="img" aria-label="${st.done} done, ${st.revise} to revise, of ${st.total}"><div class="d" style="width:${d}%"></div><div class="r" style="width:${r}%"></div></div>`;
+}
+function timeAgo(ms) {
+  if (!ms) return "never";
+  const s = Math.round((Date.now() - ms) / 1000);
+  if (s < 60) return "just now";
+  if (s < 3600) return Math.round(s / 60) + " min ago";
+  if (s < 86400) return Math.round(s / 3600) + " h ago";
+  return Math.round(s / 86400) + " days ago";
+}
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById("toast"); el.textContent = msg; el.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 2400);
+}
+function setMark(file, q, value) {
+  const k = questionKey(file, q.title);
+  state.marks[k] = { s: getMark(k) === value ? "" : value, t: Date.now() };
+  state.last = { file, n: q.n, at: Date.now() };
+  saveState();
+  requestPersistentStorage();
+  if (sync.user) schedulePush();
+}
+
+// ===================== Optional cloud sync (Firebase) =====================
+const CONFIG = (window.TRACKER_CONFIG && window.TRACKER_CONFIG.firebase) || null;
+const sync = { enabled: !!CONFIG, ready: false, user: null, status: "local", lastSynced: 0, pending: false, fb: null, unsub: null, timer: null };
+
+// A small device-wide note (shared by the Android and iOS trackers) that this browser was signed in,
+// so the UI doesn't flash "Sign in" on every page load while Firebase restores the session.
+const SIGNED_IN_HINT = "iq-signed-in";
+function signedInHint() { try { return localStorage.getItem(SIGNED_IN_HINT) === "1"; } catch (e) { return false; } }
+function setSignedInHint(on) { try { on ? localStorage.setItem(SIGNED_IN_HINT, "1") : localStorage.removeItem(SIGNED_IN_HINT); } catch (e) {} }
+function restoringSignIn() { return sync.enabled && !sync.authResolved && signedInHint(); }
+function renderChip() {
+  const chip = document.getElementById("sync-chip");
+  chip.hidden = !sync.enabled;                       // no sign-in configured → nothing to show
+  document.getElementById("footer-sync").hidden = !sync.enabled || !!sync.user || restoringSignIn();
+  chip.className = "btn chip";
+  if (!sync.user && restoringSignIn()) {             // signed in last time: don't flash "Sign in" while the account loads
+    chip.textContent = "⟳ Syncing…"; chip.title = "Restoring your account…";
+    return;
+  }
+  if (!sync.user) {
+    chip.innerHTML = "☁️ Sign in<span class=\"long\"> to sync</span>";
+    chip.title = "Your progress is saved on this device. Sign in to keep it in sync across devices.";
+    return;
+  }
+  const map = {
+    syncing: ["⟳ Syncing…", ""], synced: ["☁️ Synced", "synced"],
+    offline: ["☁️ Offline · will sync", "warn"], error: ["⚠️ Sync paused", "warn"]
+  };
+  const [label, cls] = map[sync.status] || map.synced;
+  chip.textContent = label; if (cls) chip.classList.add(cls);
+  chip.title = "Signed in as " + sync.user.email;
+}
+function setSyncStatus(s) {
+  sync.status = s; renderChip();
+  const line = document.getElementById("sync-status-line");
+  if (line) line.textContent = syncStatusText();
+}
+function syncStatusText() {
+  if (sync.status === "syncing") return "Syncing your progress…";
+  if (sync.status === "offline") return "You're offline. Changes are saved on this device and will sync when you're back online.";
+  if (sync.status === "error") return "Sync is paused because of a problem. Your progress is still saved on this device. Try “Sync now”.";
+  return "All changes synced · last synced " + timeAgo(sync.lastSynced) + ".";
+}
+
+async function initFirebase() {
+  if (!sync.enabled) return;
+  try {
+    const base = "https://www.gstatic.com/firebasejs/10.12.2/";
+    const [appM, authM, fsM] = await Promise.all([
+      import(base + "firebase-app.js"), import(base + "firebase-auth.js"), import(base + "firebase-firestore.js")]);
+    const app = appM.initializeApp(CONFIG);
+    sync.fb = { auth: authM.getAuth(app), db: fsM.getFirestore(app), A: authM, F: fsM };
+    sync.ready = true;
+    if (currentView === "account") route();
+    authM.onAuthStateChanged(sync.fb.auth, onUserChanged);
+  } catch (e) {
+    console.warn("Sync unavailable:", e);
+    sync.loadError = true; renderChip();
+    if (currentView === "account") route();
+  }
+}
+function progressDoc() { return sync.fb.F.doc(sync.fb.db, "users", sync.user.uid, "progress", TRACKER_ID); }
+function parseRemote(data) { try { return JSON.parse(data.data || "{}"); } catch (e) { return {}; } }
+function adoptRemoteLast(last) {
+  if (last && last.file && (!state.last || (last.at || 0) > (state.last.at || 0))) state.last = last;
+}
+
+function onUserChanged(user) {
+  if (sync.unsub) { sync.unsub(); sync.unsub = null; }
+  const wasSignedIn = !!sync.user, wasRestoring = restoringSignIn();
+  sync.user = user; sync.authResolved = true; setSignedInHint(!!user);
+  if (!user) { setSyncStatus("local"); if (site && (wasSignedIn || wasRestoring || currentView === "account" || currentView === "home")) route(); return; }
+  if (!state.prefs.welcomeDismissed) { state.prefs.welcomeDismissed = true; saveState(); }   // signed in: the welcome card has done its job
+  setSyncStatus("syncing");
+  sync.unsub = sync.fb.F.onSnapshot(progressDoc(), snap => {
+    if (snap.exists()) {
+      const data = snap.data();
+      const changed = mergeMarksInto(state.marks, parseRemote(data));
+      adoptRemoteLast(data.last);
+      if (changed) { saveState(); refreshMarksInView(); }
+    }
+    sync.lastSynced = Date.now();
+    if (!sync.pending) setSyncStatus("synced");
+  }, () => setSyncStatus(navigator.onLine ? "error" : "offline"));
+  schedulePush(0);                       // upload this device's progress (merged)
+  if (currentView === "account" || currentView === "home") route();
+}
+
+function schedulePush(delay = 1500) {
+  if (!sync.user) return;
+  sync.pending = true; setSyncStatus("syncing");
+  clearTimeout(sync.timer); sync.timer = setTimeout(pushNow, delay);
+}
+async function pushNow() {
+  if (!sync.user) return;
+  const { F, db } = sync.fb, ref = progressDoc();
+  try {
+    let merged = null, remoteLast = null;
+    await F.runTransaction(db, async tx => {
+      const snap = await tx.get(ref);
+      const remote = snap.exists() ? parseRemote(snap.data()) : {};
+      remoteLast = snap.exists() ? snap.data().last : null;
+      merged = Object.assign({}, remote);
+      mergeMarksInto(merged, state.marks);
+      let last = state.last || null;
+      if (remoteLast && (!last || (remoteLast.at || 0) > (last.at || 0))) last = remoteLast;
+      tx.set(ref, { data: JSON.stringify(merged), last, updatedAt: F.serverTimestamp() });
+    });
+    adoptRemoteLast(remoteLast);
+    if (mergeMarksInto(state.marks, merged)) refreshMarksInView();
+    saveState();
+    sync.pending = false; sync.lastSynced = Date.now(); setSyncStatus("synced");
+  } catch (e) {
+    console.warn("Sync failed:", e);
+    setSyncStatus(navigator.onLine ? "error" : "offline");
+  }
+}
+window.addEventListener("online", () => { if (sync.user && sync.pending) schedulePush(0); });
+
+const AUTH_ERRORS = {
+  "auth/invalid-email": "That email address doesn't look right.",
+  "auth/missing-password": "Please enter your password.",
+  "auth/invalid-credential": "Email or password is incorrect.",
+  "auth/wrong-password": "Email or password is incorrect.",
+  "auth/user-not-found": "Email or password is incorrect.",
+  "auth/email-already-in-use": "An account with this email already exists. Try signing in instead.",
+  "auth/weak-password": "Please choose a stronger password (at least 8 characters).",
+  "auth/too-many-requests": "Too many attempts. Please wait a few minutes and try again.",
+  "auth/network-request-failed": "You seem to be offline. Check your connection and try again.",
+  "auth/requires-recent-login": "For your security, please sign out, sign in again, and then retry.",
+  "auth/operation-not-allowed": "Sign-in isn't enabled for this site yet.",
+  "auth/unauthorized-domain": "Sign-in isn't enabled for this site's address yet."
+};
+const authMessage = e => AUTH_ERRORS[e && e.code] || "Something went wrong. Please try again.";
+
+// ===================== Views =====================
+const app = document.getElementById("app");
+const crumbSlot = document.getElementById("crumb-slot");
+// Each view renders its back link inside #app; lift it above the search bar so it's easy to find.
+function liftCrumbs() { const c = app.querySelector(".crumbs"); crumbSlot.replaceChildren(...(c ? [c] : [])); }
+let currentView = "home";
+
+function welcomeCard() {
+  if (state.prefs.welcomeDismissed || sync.user || restoringSignIn()) return "";
+  return `<section class="card notice" aria-labelledby="welcome-title">
+    <h2 id="welcome-title">👋 Start studying. No account needed.</h2>
+    <p>Mark questions <b>✓ Done</b> or <b>↻ Revise</b> as you go. Your progress is saved automatically on this device.
+    ${sync.enabled
+      ? `Want to keep it safe and in sync on your phone and other computers? <b>Sign in</b>. It's optional.`
+      : ""}</p>
+    <div class="row-btns">
+      <button class="primary" id="welcome-start">Start studying</button>
+      ${sync.enabled ? `<a class="btn" href="#/account" id="welcome-signin">Sign in to sync</a>` : ""}
+    </div>
+  </section>`;
+}
+function nudgeCard(st) {
+  if (!sync.enabled || sync.user || restoringSignIn() || !state.prefs.welcomeDismissed) return "";
+  const marked = st.done + st.revise;
+  if (marked < 10 || Date.now() < (state.prefs.nudgeSnoozeUntil || 0)) return "";
+  return `<section class="card notice" aria-labelledby="nudge-title">
+    <h2 id="nudge-title">Keep your ${marked} marked questions safe</h2>
+    <p>Your progress is saved only in this browser right now. Sign in to keep it safe and in sync across your devices.</p>
+    <div class="row-btns">
+      <a class="btn primary" href="#/account">Sign in to sync</a>
+      <button id="nudge-later">Not now</button>
+    </div>
+  </section>`;
+}
+
+function renderHome() {
+  currentView = "home";
+  const st = allStats();
+  const pct = st.total ? Math.round(st.done / st.total * 100) : 0;
+  const last = state.last && topics[state.last.file] ? state.last : null;
+  const lastTopic = last && topicOrder.find(t => t.file === last.file);
+  let firstUndone = null;
+  outer: for (const t of topicOrder) for (const q of t.questions)
+    if (!getMark(questionKey(t.file, q.title))) { firstUndone = { file: t.file, n: q.n, name: t.name }; break outer; }
+  let html = welcomeCard() + nudgeCard(st) + `
+  <section class="card summary">
+    <div>
+      <div class="big">${pct}% <span class="small muted">done</span></div>
+      <div style="margin-top:10px">${bar(st)}</div>
+      <div class="stats">
+        <span><span class="dot" style="background:var(--done)"></span>${st.done} done</span>
+        <span><span class="dot" style="background:var(--revise)"></span>${st.revise} to revise</span>
+        <span class="muted">${st.total - st.done - st.revise} not started · ${st.total} total</span>
+      </div>
+    </div>
+    <div style="display:grid;gap:8px">
+      ${lastTopic ? `<a class="btn primary" href="#/t/${encodeURIComponent(last.file)}/${last.n}">▶ Continue: ${esc(lastTopic.name)} Q${last.n}</a>` : ""}
+      ${firstUndone ? `<a class="btn" href="#/t/${encodeURIComponent(firstUndone.file)}/${firstUndone.n}">Next unstarted: ${esc(firstUndone.name)} Q${firstUndone.n}</a>` : `<span class="complete">🎉 Every question is marked!</span>`}
+    </div>
+  </section>
+  <div id="cats">`;
+  for (const c of site.categories) {
+    html += `<h2 class="cat">${esc(c.name)}</h2><div class="topics">`;
+    for (const t of c.topics) {
+      const s = topicStats(t.file);
+      const status = s.total && s.done === s.total ? `<span class="complete">✓ Complete</span>`
+        : `<span class="small muted">${s.done}/${s.total}${s.revise ? ` · ${s.revise} revise` : ""}</span>`;
+      html += `<a class="card topic" href="#/t/${encodeURIComponent(t.file)}">
+        <div class="row"><span class="name">${esc(t.num)} · ${esc(t.name)}</span>${status}</div>
+        ${bar(s)}<div class="areas">${esc(t.areas)}</div></a>`;
+    }
+    html += `</div>`;
+  }
+  html += `</div>`;
+  app.innerHTML = html; liftCrumbs();
+  const ws = document.getElementById("welcome-start");
+  if (ws) ws.onclick = () => { state.prefs.welcomeDismissed = true; saveState(); renderHome(); };
+  const wsi = document.getElementById("welcome-signin");
+  if (wsi) wsi.onclick = () => { state.prefs.welcomeDismissed = true; saveState(); };
+  const nl = document.getElementById("nudge-later");
+  if (nl) nl.onclick = () => { state.prefs.nudgeSnoozeUntil = Date.now() + 14 * 864e5; saveState(); renderHome(); };
+}
+
+// ----- Search (available on every page) -----
+// PARSE-START
+function plainText(md) {
+  return md.replace(/```[\s\S]*?```/g, " ").replace(/<[^>]+>/g, " ").replace(/[`*_#>|]/g, " ")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/\s+/g, " ").trim();
+}
+// Every word must appear in the title or answer; title matches rank first.
+function searchQuestions(list, query, limit = 50) {
+  const words = query.toLowerCase().split(/\s+/).filter(Boolean);
+  if (!words.length) return { total: 0, hits: [] };
+  const phrase = words.join(" ");
+  const hits = [];
+  for (const t of list) for (const q of t.questions) {
+    const title = q.title.toLowerCase(), text = (q.plain || (q.plain = plainText(q.answer))).toLowerCase();
+    if (!words.every(w => title.includes(w) || text.includes(w))) continue;
+    let score = words.filter(w => title.includes(w)).length * 10 + (title.includes(phrase) ? 25 : 0) + (text.includes(phrase) ? 3 : 0);
+    hits.push({ t, q, score });
+  }
+  hits.sort((a, b) => b.score - a.score || Number(a.t.num) - Number(b.t.num) || a.q.n - b.q.n);
+  return { total: hits.length, hits: hits.slice(0, limit) };
+}
+function snippetFor(q, query) {
+  const words = query.toLowerCase().split(/\s+/).filter(Boolean);
+  const title = q.title.toLowerCase();
+  const missing = words.find(w => !title.includes(w)) || (words.every(w => title.includes(w)) ? null : words[0]);
+  if (!missing) return "";
+  const text = q.plain || plainText(q.answer), i = text.toLowerCase().indexOf(missing);
+  if (i < 0) return "";
+  const start = Math.max(0, i - 60), end = Math.min(text.length, i + missing.length + 90);
+  return (start ? "…" : "") + text.slice(start, end) + (end < text.length ? "…" : "");
+}
+// PARSE-END
+// PARSE-START
+// Rank speech voices so the most natural-sounding English voice comes first.
+const NOVELTY_VOICES = /^(Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Deranged|Good News|Hysterical|Jester|Organ|Pipe Organ|Superstar|Trinoids|Whisper|Wobble|Zarvox|Fred|Junior|Ralph|Kathy|Princess|Grandma|Grandpa|Rocko|Shelley|Sandy|Flo|Eddy|Reed)\b/i;
+function voiceScore(v, lang) {
+  const name = v.name || "", vl = (v.lang || "").replace("_", "-").toLowerCase(), want = (lang || "en-US").toLowerCase();
+  let s = 0;
+  if (/natural|neural/i.test(name)) s += 100;          // Edge online "Natural" voices
+  if (/premium/i.test(name)) s += 90;                   // Apple premium (Siri-quality)
+  if (/enhanced/i.test(name)) s += 80;                  // Apple enhanced
+  if (/^google\b/i.test(name)) s += 70;                 // Chrome's Google voices
+  if (/siri/i.test(name)) s += 60;
+  if (/\b(Ava|Zoe|Evan|Nathan|Allison|Susan|Tom|Samantha|Karen|Daniel|Serena|Moira|Tessa|Aria|Jenny|Guy|Libby|Sonia|Ryan|Neerja|Prabhat)\b/i.test(name)) s += 10;
+  if (NOVELTY_VOICES.test(name)) s -= 200;
+  if (/compact/i.test(name)) s -= 40;
+  if (/espeak/i.test(name)) s -= 80;
+  if (vl === want) s += 15; else if (vl.slice(0, 2) === want.slice(0, 2) && /en-(us|gb)/.test(vl)) s += 8;
+  if (v.default) s += 3;
+  return s;
+}
+function rankVoices(voices, lang) {
+  const en = voices.filter(v => /^en/i.test(v.lang || ""));
+  return (en.length ? en : voices).map(v => ({ v, s: voiceScore(v, lang) })).sort((a, b) => b.s - a.s).map(x => x.v);
+}
+function questionToSpeech(title) {
+  return title.replace(/`/g, "").replace(/\bvs\.?\b/gi, "versus").replace(/[*_]/g, "");
+}
+// Turn a markdown answer into natural speech: skip code, read tables row by row, drop symbols.
+function answerToSpeech(md) {
+  let s = md.replace(/```mermaid[\s\S]*?```/g, "\nSee the diagram.\n").replace(/```[\s\S]*?```/g, "\nSee the code example.\n");
+  let header = null;
+  s = s.split("\n").map(line => {
+    if (/^\s*\|?\s*:?-{3,}/.test(line)) return "";
+    if (/^\s*\|.*\|\s*$/.test(line)) {
+      const cells = line.split("|").map(c => c.trim()).filter(Boolean);
+      if (!header) { header = cells; return ""; }
+      return cells.map((c, i) => (header[i] ? `${header[i]}: ${c}` : c)).join("; ") + ".";
+    }
+    header = null;
+    return line;
+  }).join("\n");
+  s = s.replace(/<[^>]+>/g, " ").replace(/!\[[^\]]*\]\([^)]*\)/g, "").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/`([^`]+)`/g, "$1").replace(/<([A-Za-z0-9?*, ]+)>/g, " of $1").replace(/\*\*|__|[*_#>`]/g, " ").replace(/\s\|\s/g, ", ").replace(/[|<]/g, " ")
+    .replace(/~\s?(?=\d)/g, "about ").replace(/~/g, " ")
+    .replace(/→/g, " to ").replace(/←/g, " from ").replace(/≈/g, " about ").replace(/×/g, " times ")
+    .replace(/[✅❌⚠️✓↻☁️💾🔊📈⭐🟣🟢🔵🟠🔴🟡]/gu, " ").replace(/\bvs\.?\b/gi, "versus").replace(/\be\.g\./gi, "for example")
+    .replace(/\bi\.e\./gi, "that is").replace(/\betc\./gi, "etcetera").replace(/^\s*(\d+\.|[-•])\s+/gm, "")
+    .replace(/:\s*\n/g, ": ").replace(/([^.!?:;])\n{2,}/g, "$1.\n").replace(/\n+/g, " ").replace(/\s+/g, " ")
+    .replace(/\s+([.,;:!?])/g, "$1").replace(/([.!?])(\s*[.;])+/g, "$1").trim();
+  return s;
+}
+// Short chunks avoid browsers cutting off long utterances (~15s limit in Chrome).
+function speechChunks(text, max = 220) {
+  const sentences = text.match(/[^.!?;]+[.!?;]+["')\]]*|[^.!?;]+$/g) || [text];
+  const out = []; let cur = "";
+  const push = s => { s = s.trim(); if (s) out.push(s); };
+  for (let sen of sentences) {
+    while (sen.length > max) {                      // split very long sentences at commas/spaces
+      let cut = sen.lastIndexOf(", ", max); if (cut < max / 2) cut = sen.lastIndexOf(" ", max); if (cut < 1) cut = max;
+      push(cur); cur = ""; push(sen.slice(0, cut + 1)); sen = sen.slice(cut + 1);
+    }
+    if ((cur + " " + sen).length > max) { push(cur); cur = sen; } else cur += " " + sen;
+  }
+  push(cur);
+  return out;
+}
+// PARSE-END
+// ----- Diagrams (Mermaid), loaded only when an answer with a diagram is opened -----
+let mermaidLib = null, diagramSeq = 0, diagramQueue = Promise.resolve();
+function loadMermaid() {
+  if (mermaidLib) return mermaidLib;
+  mermaidLib = new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js";
+    s.onload = () => resolve(window.mermaid);
+    s.onerror = () => { mermaidLib = null; reject(new Error("diagram library failed to load")); };
+    document.head.appendChild(s);
+  });
+  return mermaidLib;
+}
+function isDarkTheme() {
+  const t = document.documentElement.dataset.theme;
+  return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+}
+function renderDiagrams(root) {
+  root.querySelectorAll("pre > code.language-mermaid").forEach(code => {
+    const div = document.createElement("div");
+    div.className = "diagram"; div.dataset.src = code.textContent; div.textContent = "Loading diagram…";
+    div.setAttribute("role", "img"); div.setAttribute("aria-label", "Diagram");
+    code.parentElement.replaceWith(div);
+  });
+  const nodes = [...root.querySelectorAll(".diagram[data-src]:not([data-done])")];
+  if (!nodes.length) return diagramQueue;
+  diagramQueue = diagramQueue.then(async () => {           // render one at a time
+    let m;
+    try { m = await loadMermaid(); }
+    catch (e) { nodes.forEach(n => { n.innerHTML = `<pre><code>${esc(n.dataset.src)}</code></pre>`; n.dataset.done = "1"; }); return; }
+    m.initialize({ startOnLoad: false, securityLevel: "strict", theme: isDarkTheme() ? "dark" : "default",
+                   fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" });
+    for (const n of nodes) {
+      if (!document.body.contains(n)) continue;
+      try {
+        // Phones: lay left-to-right flowcharts out top-to-bottom so they fit the narrow screen.
+        const src = narrowScreen.matches ? n.dataset.src.replace(/^(\s*flowchart\s+)LR\b/, "$1TD") : n.dataset.src;
+        const { svg } = await m.render("dg" + (++diagramSeq), src);
+        n.innerHTML = `<div class="diagram-scroll">${svg}</div><span class="diagram-hint">⤢ Tap to enlarge</span>`;
+        sizeDiagram(n); n.classList.add("rendered");
+        n.setAttribute("tabindex", "0"); n.setAttribute("aria-label", "Diagram. Tap to enlarge");
+        n.onclick = () => openDiagram(n);
+        n.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDiagram(n); } };
+      }
+      catch (e) { n.innerHTML = `<pre><code>${esc(n.dataset.src)}</code></pre>`; }
+      n.dataset.done = "1";
+    }
+  });
+  return diagramQueue;
+}
+// Render at natural size (readable), capped; wide diagrams scroll inside their box instead of shrinking.
+function sizeDiagram(n) {
+  const svg = n.querySelector("svg"); if (!svg) return;
+  const vb = svg.viewBox && svg.viewBox.baseVal;
+  const natural = vb && vb.width ? vb.width : svg.getBoundingClientRect().width;
+  const box = n.querySelector(".diagram-scroll");
+  const avail = (box && box.clientWidth) || 300;
+  // Fit the screen when text stays legible; otherwise scale down to at most 65% and let the rest scroll.
+  let w = Math.min(natural, 640);
+  if (w > avail) w = Math.max(avail, natural * 0.65);
+  svg.style.maxWidth = "none"; svg.style.width = w + "px";
+  if (vb && vb.width) svg.style.height = (w * vb.height / vb.width) + "px";
+  if (box) {
+    const wide = w > avail + 1;
+    box.classList.toggle("wide", wide);
+    const vertical = /^\s*flowchart\s+(TD|TB)\b/.test(n.dataset.src) || (narrowScreen.matches && /^\s*flowchart\s+LR\b/.test(n.dataset.src));
+    if (wide && vertical) box.scrollLeft = (w - avail) / 2;  // vertical flowcharts: start centred on the main path
+  }
+}
+function openDiagram(n) {
+  const src = n.querySelector("svg"); if (!src) return;
+  const vb = src.viewBox && src.viewBox.baseVal;
+  const overlay = document.createElement("div");
+  overlay.className = "diagram-zoom"; overlay.setAttribute("role", "dialog"); overlay.setAttribute("aria-modal", "true"); overlay.setAttribute("aria-label", "Diagram");
+  overlay.innerHTML = `<header><span class="small muted">Pinch or scroll to explore</span><button aria-label="Close diagram">✕ Close</button></header><div class="zoom-body"></div>`;
+  const clone = src.cloneNode(true);
+  const w = vb && vb.width ? Math.max(vb.width, Math.min(window.innerWidth - 32, vb.width * 1.5)) : 900;
+  clone.style.width = w + "px"; clone.style.maxWidth = "none";
+  if (vb && vb.width) clone.style.height = (w * vb.height / vb.width) + "px";
+  overlay.querySelector(".zoom-body").appendChild(clone);
+  const close = () => { overlay.remove(); document.removeEventListener("keydown", onKey); n.focus && n.focus(); };
+  const onKey = e => { if (e.key === "Escape") close(); };
+  overlay.querySelector("button").onclick = close;
+  document.addEventListener("keydown", onKey);
+  document.body.appendChild(overlay);
+  overlay.querySelector("button").focus();
+}
+window.rerenderDiagrams = () => {
+  const done = [...document.querySelectorAll(".diagram[data-done]")];
+  if (!done.length) return;
+  done.forEach(n => n.removeAttribute("data-done"));
+  renderDiagrams(document.getElementById("app"));
+};
+function highlight(html, query) {
+  const words = query.split(/\s+/).filter(w => w.length > 1).map(w => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  if (!words.length) return html;
+  const re = new RegExp("(" + words.join("|") + ")", "gi");
+  return html.split(/(<[^>]+>)/).map(part => part.startsWith("<") ? part : part.replace(re, "<mark>$1</mark>")).join("");
+}
+// Search started from inside a topic searches that topic first; one tap widens it to all topics.
+let searchContext = null;   // topic file the search was started from (null = everywhere)
+let searchScope = "all";    // "topic" | "all"
+function renderSearchView(query) {
+  currentView = "search";
+  const ctxMeta = searchContext && topicOrder.find(t => t.file === searchContext);
+  const inTopic = !!ctxMeta && searchScope === "topic";
+  const all = searchQuestions(topicOrder, query);
+  const res = inTopic ? searchQuestions([ctxMeta], query) : all;
+  const others = ctxMeta ? all.total - searchQuestions([ctxMeta], query).total : 0;
+  let html = `<div class="crumbs"><a href="#/" id="search-close">← ${ctxMeta ? "Back to " + esc(ctxMeta.name) : "Close search"}</a></div>`;
+  if (ctxMeta) {
+    html += `<div class="row-btns small" style="margin-bottom:10px">` + (inTopic
+      ? `<span class="muted">${res.total} in ${esc(ctxMeta.name)}${others ? ` · ${others} more in other topics` : ""}</span>
+         ${others && res.total ? `<button id="scope-btn">Search all topics</button>` : ""}`
+      : `<span class="muted">${all.total} in all topics</span>
+         <button id="scope-btn">Only ${esc(ctxMeta.name)}</button>`) + `</div>`;
+  }
+  if (!res.total) {
+    html += inTopic && others
+      ? `<div class="empty">No matches for “${esc(query)}” in ${esc(ctxMeta.name)}.<br><button id="scope-btn-empty" class="primary" style="margin-top:10px">Search all topics (${others})</button></div>`
+      : `<div class="empty">No questions match “${esc(query)}”.<br><span class="small">Try fewer or different words.</span></div>`;
+  } else {
+    if (!ctxMeta || !inTopic) html += `<p class="small muted">${res.total} matching question${res.total > 1 ? "s" : ""}${res.total > res.hits.length ? ` · showing the top ${res.hits.length}, so add a word to narrow it down` : ""}</p>`;
+    for (const h of res.hits) html += questionCard(h.t.file, h.q, !inTopic, query);
+  }
+  app.innerHTML = html; liftCrumbs();
+  document.getElementById("search-close").onclick = e => { e.preventDefault(); clearSearch(); };
+  const toggle = () => { searchScope = searchScope === "topic" ? "all" : "topic"; renderSearchView(query); };
+  ["scope-btn", "scope-btn-empty"].forEach(id => { const b = document.getElementById(id); if (b) b.onclick = toggle; });
+  bindCards(card => refreshCard(card));
+}
+const searchInput = document.getElementById("global-search");
+const narrowScreen = matchMedia("(max-width: 560px)");
+const placeholderFor = topicName => topicName ? `Search in ${topicName}…`
+  : (narrowScreen.matches ? "Search questions…" : "Search all questions and answers…");
+let searchTimer;
+function clearSearch() { searchInput.value = ""; route(); }
+searchInput.addEventListener("input", () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    if (!site) return;
+    if (!searchInput.value.trim()) { route(); return; }
+    if (currentView !== "search") {           // a new search: remember where it started
+      searchContext = currentView === "topic" ? currentTopic : null;
+      searchScope = searchContext ? "topic" : "all";
+    }
+    renderSearchView(searchInput.value.trim());
+  }, 150);
+});
+searchInput.addEventListener("keydown", e => { if (e.key === "Escape") { clearSearch(); searchInput.blur(); } });
+document.addEventListener("keydown", e => {
+  if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
+  const tag = (document.activeElement && document.activeElement.tagName) || "";
+  if (/INPUT|TEXTAREA|SELECT/.test(tag)) return;
+  e.preventDefault(); searchInput.focus(); searchInput.select();
+});
+
+let topicFilter = "all";
+function questionCard(file, q, showSource, query) {
+  const s = getMark(questionKey(file, q.title));
+  const meta = showSource && topicOrder.find(t => t.file === file);
+  const snippet = query ? snippetFor(q, query) : "";
+  return `<article class="card q ${s}" id="q-${q.n}" data-file="${esc(file)}" data-n="${q.n}">
+    <div class="qt"><span class="num">${q.n}.</span><div class="title">${query ? highlight(inline(q.title), query) : inline(q.title)}</div>
+      ${speech.supported ? `<button class="listen-btn" title="Listen to just this question" aria-label="Listen to just this question">🔊</button>` : ""}</div>
+    ${meta ? `<div class="src"><a href="#/t/${encodeURIComponent(file)}/${q.n}">${esc(meta.name)} · Q${q.n}</a></div>` : ""}
+    ${snippet ? `<div class="snippet">${highlight(esc(snippet), query)}</div>` : ""}
+    <div class="actions">
+      <button class="show-btn" aria-expanded="false">Show answer</button>
+      <button class="done-btn" aria-pressed="${s === "done"}">✓ Done</button>
+      <button class="rev-btn" aria-pressed="${s === "revise"}">↻ Revise</button>
+    </div>
+    <div class="answer" hidden></div>
+  </article>`;
+}
+function bindCards(onChange) {
+  app.querySelectorAll("article.q").forEach(card => {
+    const file = card.dataset.file, n = Number(card.dataset.n);
+    const q = topics[file].questions.find(x => x.n === n);
+    const ans = card.querySelector(".answer"), show = card.querySelector(".show-btn");
+    show.onclick = () => {
+      if (!ans.dataset.rendered) { ans.innerHTML = marked.parse(q.answer); ans.dataset.rendered = "1"; renderDiagrams(ans); }
+      ans.hidden = !ans.hidden;
+      show.textContent = ans.hidden ? "Show answer" : "Hide answer";
+      show.setAttribute("aria-expanded", String(!ans.hidden));
+      state.last = { file, n, at: Date.now() }; saveState();
+    };
+    const lb = card.querySelector(".listen-btn");
+    if (lb) lb.onclick = () => {
+      const cur = speech.playing && speech.items[speech.index];
+      if (cur && cur.file === file && cur.n === n) { stopSpeech(); return; }      // tapping the one being read stops it
+      if (speech.playing && speech.mode === "list") toast(`Reading just Q${n}`);
+      const sp = document.getElementById("start-panel"); if (sp) sp.remove();
+      playItems([{ file, n }], 0, "single");
+    };
+    card.querySelector(".done-btn").onclick = () => { setMark(file, q, "done"); onChange(card, file, q); };
+    card.querySelector(".rev-btn").onclick = () => { setMark(file, q, "revise"); onChange(card, file, q); };
+  });
+}
+function refreshCard(card) {
+  const file = card.dataset.file, q = topics[file].questions.find(x => x.n === Number(card.dataset.n));
+  const s = getMark(questionKey(file, q.title));
+  card.classList.remove("done", "revise"); if (s) card.classList.add(s);
+  card.querySelector(".done-btn").setAttribute("aria-pressed", String(s === "done"));
+  card.querySelector(".rev-btn").setAttribute("aria-pressed", String(s === "revise"));
+}
+function refreshTopicHead(file) {
+  const head = app.querySelector(".topic-head");
+  if (!head) return;
+  const s = topicStats(file);
+  head.querySelector(".bar").outerHTML = bar(s);
+  const spans = head.querySelectorAll(".stats span");
+  spans[0].textContent = `${s.done}/${s.total} done`;
+  spans[1].textContent = `${s.revise} to revise`;
+}
+// Called when marks arrive from another device: update in place, never disrupt reading.
+function refreshMarksInView() {
+  if (!site) return;                             // still loading; first render will show the merged marks
+  if (currentView === "home") {
+    renderHome();
+  } else if (currentView === "topic" || currentView === "revise" || currentView === "search") {
+    app.querySelectorAll("article.q").forEach(refreshCard);
+    if (currentView === "topic") refreshTopicHead(currentTopic);
+  }
+}
+
+let currentTopic = null;
+function renderTopic(file, focusN) {
+  const t = topics[file], meta = topicOrder.find(x => x.file === file);
+  if (!t || !meta) { app.innerHTML = `<div class="empty">Topic not found. <a href="#/">Go home</a></div>`; liftCrumbs(); return; }
+  currentView = "topic"; currentTopic = file;
+  searchInput.placeholder = placeholderFor(meta.name);
+  const idx = topicOrder.indexOf(meta), prev = topicOrder[idx - 1], next = topicOrder[idx + 1];
+  const st = topicStats(file);
+  const match = q => { const s = getMark(questionKey(file, q.title));
+    return topicFilter === "all" || (topicFilter === "todo" && !s) || topicFilter === s; };
+  let html = `<div class="crumbs"><a href="#/">← All topics</a></div>
+    <section class="card topic-head"><h2>${esc(meta.num)} · ${esc(t.title || meta.name)}</h2>
+      <div class="small muted">${inline(t.covers || meta.areas)}</div>
+      <div style="margin-top:12px">${bar(st)}</div>
+      <div class="stats"><span>${st.done}/${st.total} done</span><span>${st.revise} to revise</span>
+        ${repoPath() ? `<a href="https://github.com${repoPath()}/blob/main/${encodeURI(file)}" target="_blank" rel="noopener">Open on GitHub ↗</a>` : ""}</div>
+    </section>
+    <div class="filters" role="group" aria-label="Filter questions">
+      ${[["all", "All"], ["todo", "Not started"], ["revise", "Revise"], ["done", "Done"]].map(([v, l]) =>
+        `<button data-f="${v}" aria-pressed="${topicFilter === v}">${l}</button>`).join("")}
+      <button id="expand-all">Expand all answers</button>
+      ${speech.supported ? `<button id="listen-all" title="Read every question shown here, one after another">🔊 ${topicFilter === "all" ? "Listen to topic" : `Listen to ${t.questions.filter(match).length} ${{ todo: "not started", revise: "Revise", done: "Done" }[topicFilter]}`}</button>` : ""}
+    </div>`;
+  let section = null, shown = 0;
+  for (const q of t.questions) {
+    if (!match(q)) continue;
+    if (q.section !== section) { section = q.section; if (section) html += `<h3 class="section">${esc(section)}</h3>`; }
+    html += questionCard(file, q, false); shown++;
+  }
+  if (!shown) html += `<div class="empty">No questions in this filter.</div>`;
+  html += `<nav class="pager">
+    ${prev ? `<a class="btn" href="#/t/${encodeURIComponent(prev.file)}">← ${esc(prev.name)}</a>` : "<span></span>"}
+    ${next ? `<a class="btn" href="#/t/${encodeURIComponent(next.file)}">${esc(next.name)} →</a>` : ""}</nav>`;
+  app.innerHTML = html; liftCrumbs();
+  app.querySelectorAll(".filters button[data-f]").forEach(b => b.onclick = () => { stopSpeech(); topicFilter = b.dataset.f; renderTopic(file); });
+  const la = document.getElementById("listen-all");
+  if (la) la.onclick = () => {
+    if (speech.playing && speech.mode === "list") { stopSpeech(); return; }
+    const items = [...app.querySelectorAll("article.q")].map(c => ({ file: c.dataset.file, n: Number(c.dataset.n) }));
+    if (items.length) toggleStartPanel(items, la, false); else toast("No questions to read in this filter.");
+  };
+  document.getElementById("expand-all").onclick = e => {
+    const open = e.target.textContent.startsWith("Expand");
+    app.querySelectorAll("article.q").forEach(c => { if (c.querySelector(".answer").hidden === open) c.querySelector(".show-btn").click(); });
+    e.target.textContent = open ? "Collapse all answers" : "Expand all answers";
+  };
+  bindCards(card => {
+    refreshCard(card); refreshTopicHead(file);
+    const s = topicStats(file);
+    if (s.total && s.done === s.total) toast("🎉 Topic complete!");
+  });
+  if (focusN) {
+    const el = document.getElementById("q-" + focusN);
+    if (el) { el.classList.add("focus"); el.scrollIntoView({ block: "start" }); setTimeout(() => el.classList.remove("focus"), 2500); }
+  } else window.scrollTo(0, 0);
+}
+
+function renderRevise() {
+  currentView = "revise";
+  let html = `<div class="crumbs"><a href="#/">← All topics</a></div><h2>↻ Questions to revise</h2>`, count = 0;
+  for (const t of topicOrder) for (const q of t.questions)
+    if (getMark(questionKey(t.file, q.title)) === "revise") { html += questionCard(t.file, q, true); count++; }
+  if (!count) html += `<div class="empty">Nothing marked for revision yet. Use the ↻ Revise button on any question you want to come back to.</div>`;
+  else if (speech.supported) html = html.replace("<h2>↻ Questions to revise</h2>",
+    `<div class="row-btns" style="justify-content:space-between"><h2>↻ Questions to revise</h2><button id="listen-all">🔊 Listen to all</button></div>`);
+  app.innerHTML = html; liftCrumbs();
+  const la = document.getElementById("listen-all");
+  if (la) la.onclick = () => {
+    if (speech.playing && speech.mode === "list") { stopSpeech(); return; }
+    toggleStartPanel([...app.querySelectorAll("article.q")].map(c => ({ file: c.dataset.file, n: Number(c.dataset.n) })), la, true);
+  };
+  bindCards(card => refreshCard(card));
+  window.scrollTo(0, 0);
+}
+
+// ----- Account page -----
+let authMode = "signin";
+function renderAccount() {
+  currentView = "account";
+  const st = allStats();
+  let syncSection;
+  if (!sync.enabled) {
+    syncSection = `<section class="card">
+      <h2>☁️ Sync across devices</h2>
+      <p class="muted small">Sign-in isn't available on this site yet. Your progress is saved on this device.</p>
+    </section>`;
+  } else if (sync.loadError) {
+    syncSection = `<section class="card"><h2>☁️ Sync across devices <span class="small muted">(optional)</span></h2>
+      <p class="small muted">Sign-in couldn't load right now. You may be offline, or your network may block it (common on work networks).
+      Your progress is still saved on this device.</p>
+      <button id="retry-sync">Try again</button></section>`;
+  } else if (!sync.ready) {
+    syncSection = `<section class="card"><h2>☁️ Sync across devices <span class="small muted">(optional)</span></h2><p class="muted">Loading sign-in…</p></section>`;
+  } else if (sync.user) {
+    syncSection = `<section class="card">
+      <h2>☁️ Sync is on</h2>
+      <p>Signed in as <b>${esc(sync.user.email)}</b>. Your progress stays in sync on every device where you sign in.</p>
+      <p class="small muted" id="sync-status-line" aria-live="polite">${esc(syncStatusText())}</p>
+      <div class="row-btns">
+        <button id="sync-now">Sync now</button>
+        <button id="sign-out">Sign out</button>
+      </div>
+      <p class="small muted" style="margin-top:12px">Signing out keeps your progress on this device. It just stops syncing.</p>
+      <details style="margin-top:8px"><summary class="small muted">Delete account</summary>
+        <p class="small">This permanently deletes your account and the progress stored in the cloud. Progress on this device is kept.</p>
+        <button id="delete-account" class="danger">Delete my account</button>
+        <div class="form-msg" id="delete-msg" role="alert"></div>
+      </details>
+    </section>`;
+  } else {
+    const isUp = authMode === "signup", isReset = authMode === "reset";
+    syncSection = `<section class="card">
+      <h2>☁️ Sync across devices <span class="small muted">(optional)</span></h2>
+      <p class="small muted">You don't need an account to study. Sign in only if you want your progress on your phone, laptop and other computers.
+      ${st.done + st.revise ? `The ${st.done + st.revise} questions you've marked on this device will be added to your account.` : ""}</p>
+      ${isReset ? "" : `<div class="tabs" role="group" aria-label="Account">
+        <button id="tab-signin" aria-pressed="${!isUp}">Sign in</button>
+        <button id="tab-signup" aria-pressed="${isUp}">Create account</button></div>`}
+      <form id="auth-form" novalidate>
+        ${isReset ? `<p class="small">Enter your email and we'll send you a link to reset your password.</p>` : ""}
+        <label for="auth-email">Email</label>
+        <input type="email" id="auth-email" autocomplete="email" required inputmode="email" autocapitalize="off" spellcheck="false">
+        ${isReset ? "" : `<label for="auth-password">Password${isUp ? ` <span class="muted small">(at least 8 characters)</span>` : ""}</label>
+        <div class="pw-wrap"><input type="password" id="auth-password" autocomplete="${isUp ? "new-password" : "current-password"}" required minlength="${isUp ? 8 : 1}">
+        <button type="button" id="pw-toggle" aria-label="Show password">Show</button></div>`}
+        <div class="row-btns" style="margin-top:14px">
+          <button type="submit" class="primary" id="auth-submit">${isReset ? "Send reset link" : isUp ? "Create account" : "Sign in"}</button>
+          ${isReset ? `<button type="button" class="linkish" id="back-signin">Back to sign in</button>`
+                    : (!isUp ? `<button type="button" class="linkish" id="forgot">Forgot password?</button>` : "")}
+        </div>
+        <div class="form-msg" id="auth-msg" role="alert"></div>
+      </form>
+      <p class="small muted" style="margin-top:12px">We store only your email and your study progress. Nothing else, and it's never shared.</p>
+    </section>`;
+  }
+  app.innerHTML = `<div class="crumbs"><a href="#/">← All topics</a></div>
+  <div class="account">
+    <h2 style="font-size:1.4rem;margin:0 0 6px">Account</h2>
+    <p class="muted" style="margin-top:0">Your progress (${st.done} done, ${st.revise} to revise) is saved on this device.
+      Sign in to keep it safe and in sync across your devices.</p>
+    ${syncSection}
+  </div>`;
+  liftCrumbs();
+  bindAccount();
+}
+
+function bindAccount() {
+  const $ = id => document.getElementById(id);
+  if ($("tab-signin")) $("tab-signin").onclick = () => { authMode = "signin"; renderAccount(); };
+  if ($("tab-signup")) $("tab-signup").onclick = () => { authMode = "signup"; renderAccount(); };
+  if ($("forgot")) $("forgot").onclick = () => { const e = $("auth-email").value; authMode = "reset"; renderAccount(); $("auth-email").value = e; };
+  if ($("back-signin")) $("back-signin").onclick = () => { authMode = "signin"; renderAccount(); };
+  if ($("pw-toggle")) $("pw-toggle").onclick = () => {
+    const pw = $("auth-password"), show = pw.type === "password";
+    pw.type = show ? "text" : "password"; $("pw-toggle").textContent = show ? "Hide" : "Show";
+    $("pw-toggle").setAttribute("aria-label", show ? "Hide password" : "Show password");
+  };
+  if ($("auth-form")) $("auth-form").onsubmit = async ev => {
+    ev.preventDefault();
+    const msg = $("auth-msg"), btn = $("auth-submit");
+    const email = $("auth-email").value.trim(), pw = $("auth-password") ? $("auth-password").value : "";
+    msg.className = "form-msg"; msg.textContent = "";
+    if (!/^\S+@\S+\.\S+$/.test(email)) { msg.className = "form-msg error"; msg.textContent = "Please enter a valid email address."; return; }
+    if (authMode === "signup" && pw.length < 8) { msg.className = "form-msg error"; msg.textContent = "Password must be at least 8 characters."; return; }
+    if (authMode === "signin" && !pw) { msg.className = "form-msg error"; msg.textContent = "Please enter your password."; return; }
+    const { A, auth } = sync.fb;
+    btn.disabled = true;
+    try {
+      if (authMode === "reset") {
+        try { await A.sendPasswordResetEmail(auth, email); } catch (e) { if (e.code !== "auth/user-not-found") throw e; }
+        msg.className = "form-msg ok"; msg.textContent = "If an account exists for that email, a reset link is on its way. Check your inbox.";
+      } else if (authMode === "signup") {
+        await A.createUserWithEmailAndPassword(auth, email, pw);
+        toast("Account created. Your progress is now syncing.");
+      } else {
+        await A.signInWithEmailAndPassword(auth, email, pw);
+        toast("Signed in. Syncing your progress.");
+      }
+    } catch (e) { msg.className = "form-msg error"; msg.textContent = authMessage(e); }
+    finally { if (document.body.contains(btn)) btn.disabled = false; }
+  };
+  if ($("retry-sync")) $("retry-sync").onclick = () => { sync.loadError = false; renderAccount(); initFirebase(); };
+  if ($("sync-now")) $("sync-now").onclick = () => schedulePush(0);
+  if ($("sign-out")) $("sign-out").onclick = async () => { await sync.fb.A.signOut(sync.fb.auth); toast("Signed out. Your progress stays on this device."); };
+  if ($("delete-account")) $("delete-account").onclick = async () => {
+    if (!confirm("Delete your account and cloud progress permanently? Progress on this device will be kept.")) return;
+    const m = $("delete-msg");
+    try {
+      if (sync.unsub) { sync.unsub(); sync.unsub = null; }
+      await sync.fb.F.deleteDoc(progressDoc());
+      await sync.fb.A.deleteUser(sync.fb.auth.currentUser);
+      toast("Account deleted.");
+    } catch (e) { m.className = "form-msg error"; m.textContent = authMessage(e); }
+  };
+}
+
+function repoPath() {
+  if (!location.hostname.endsWith("github.io")) return "";
+  const user = location.hostname.split(".")[0];
+  const repo = location.pathname.split("/").filter(Boolean)[0] || "";
+  return `/${user}/${repo}`;
+}
+
+// ===================== Read aloud (Web Speech API) =====================
+const speech = { supported: "speechSynthesis" in window && "SpeechSynthesisUtterance" in window,
+  playing: false, paused: false, mode: "single", items: [], index: 0, queue: [], current: "", token: 0,
+  rates: [0.8, 1, 1.25, 1.5], rate: Number(state.prefs.rate) || 1 };
+function pickVoice() {
+  const voices = speech.supported ? speechSynthesis.getVoices() : [];
+  if (state.prefs.voiceName) { const chosen = voices.find(v => v.name === state.prefs.voiceName); if (chosen) return chosen; }
+  return rankVoices(voices, navigator.language || "en-US")[0] || null;
+}
+// Reflect playback state on the 🔊 buttons: the card being read shows ⏹, the list button becomes "Stop listening".
+function updateListenButtons() {
+  const cur = speech.playing && speech.items[speech.index];
+  app.querySelectorAll("article.q").forEach(card => {
+    const b = card.querySelector(".listen-btn"); if (!b) return;
+    const active = cur && card.dataset.file === cur.file && Number(card.dataset.n) === cur.n;
+    b.textContent = active ? "⏹" : "🔊";
+    b.title = active ? "Stop reading" : "Listen to just this question";
+    b.setAttribute("aria-label", b.title);
+  });
+  const la = document.getElementById("listen-all");
+  if (la) {
+    if (!la.dataset.label) la.dataset.label = la.textContent;
+    la.textContent = speech.playing && speech.mode === "list" ? "⏹ Stop listening" : la.dataset.label;
+  }
+}
+function playerUI() {
+  const pl = document.getElementById("player");
+  pl.hidden = !speech.playing; document.body.classList.toggle("playing", speech.playing);
+  updateListenButtons();
+  if (!speech.playing) return;
+  const it = speech.items[speech.index], q = topics[it.file].questions.find(x => x.n === it.n);
+  document.getElementById("player-pos").textContent = speech.items.length > 1 ? `${speech.index + 1} of ${speech.items.length} · Q${it.n}` : `Q${it.n}`;
+  document.getElementById("player-title").textContent = q.title.replace(/`/g, "");
+  const pb = document.getElementById("player-pause");
+  pb.textContent = speech.paused ? "▶" : "⏸"; pb.setAttribute("aria-label", speech.paused ? "Resume" : "Pause");
+  document.getElementById("player-next").disabled = speech.index >= speech.items.length - 1;
+}
+function cardFor(it) { return app.querySelector(`article.q[data-file="${CSS.escape(it.file)}"][data-n="${it.n}"]`); }
+// "Start reading from…" panel for topic / revise-list reading.
+function toggleStartPanel(items, anchor, showTopic) {
+  const existing = document.getElementById("start-panel");
+  if (existing) { existing.remove(); anchor.setAttribute("aria-expanded", "false"); return; }
+  const label = it => { const q = topics[it.file].questions.find(x => x.n === it.n);
+    const name = showTopic ? topicOrder.find(t => t.file === it.file).name + " · " : "";
+    const title = q.title.replace(/`/g, ""); return `${name}Q${it.n} · ${title.length > 70 ? title.slice(0, 68) + "…" : title}`; };
+  const lastIdx = state.last ? items.findIndex(it => it.file === state.last.file && it.n === state.last.n) : -1;
+  const notDoneIdx = items.findIndex(it => getMark(questionKey(it.file, topics[it.file].questions.find(x => x.n === it.n).title)) !== "done");
+  const quick = [[0, "From the beginning"]];
+  if (lastIdx > 0) quick.push([lastIdx, `Where you left off (Q${items[lastIdx].n})`]);
+  if (notDoneIdx > 0 && notDoneIdx !== lastIdx) quick.push([notDoneIdx, `First not done (Q${items[notDoneIdx].n})`]);
+  const selected = lastIdx > 0 ? lastIdx : (notDoneIdx > 0 ? notDoneIdx : 0);
+  const panel = document.createElement("section");
+  panel.className = "card start-panel"; panel.id = "start-panel";
+  panel.setAttribute("aria-label", "Choose where to start reading");
+  panel.innerHTML = `<h3>🔊 Start reading from</h3>
+    <div class="row-btns">${quick.map(([i, l]) => `<button data-start="${i}"${i === selected ? ' class="primary"' : ""}>${esc(l)}</button>`).join("")}</div>
+    <div class="pick">
+      <label class="sr-only" for="start-select">Choose a question</label>
+      <select id="start-select">${items.map((it, i) => `<option value="${i}"${i === selected ? " selected" : ""}>${esc(label(it))}</option>`).join("")}</select>
+      <button class="primary" id="start-go">▶ Start</button>
+    </div>`;
+  const row = anchor.closest(".filters, .row-btns") || anchor;
+  row.insertAdjacentElement("afterend", panel);
+  anchor.setAttribute("aria-expanded", "true");
+  const start = i => { panel.remove(); anchor.setAttribute("aria-expanded", "false"); playItems(items, i, "list"); };
+  panel.querySelectorAll("[data-start]").forEach(b => b.onclick = () => start(Number(b.dataset.start)));
+  panel.querySelector("#start-go").onclick = () => start(Number(panel.querySelector("#start-select").value));
+}
+function playItems(items, start, mode) {
+  if (!speech.supported) return;
+  const wasPlaying = speech.playing;
+  stopSpeech();                                   // only one reading at a time
+  speech.items = items; speech.index = start; speech.mode = mode || "single";
+  speech.playing = true; speech.paused = false; speech.current = "";
+  const token = ++speech.token;
+  // Safari can drop speech queued immediately after cancel(), so give it a moment when switching.
+  if (wasPlaying) { playerUI(); setTimeout(() => { if (token === speech.token && speech.playing && !speech.paused) speakCurrentItem(); }, 150); }
+  else speakCurrentItem();
+}
+function speakCurrentItem() {
+  const it = speech.items[speech.index], q = topics[it.file].questions.find(x => x.n === it.n);
+  app.querySelectorAll("article.q.speaking").forEach(c => c.classList.remove("speaking"));
+  const card = cardFor(it);
+  if (card) {
+    card.classList.add("speaking");
+    const ans = card.querySelector(".answer");
+    if (ans.hidden) card.querySelector(".show-btn").click();
+    card.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  speech.queue = [`Question ${it.n}. ${questionToSpeech(q.title)}`, ...speechChunks(answerToSpeech(q.answer))];
+  playerUI();
+  speakNextChunk();
+}
+function speakNextChunk() {
+  if (!speech.playing || speech.paused) return;
+  if (!speech.queue.length) { finishItem(); return; }
+  const text = speech.queue.shift(), token = ++speech.token;
+  speech.current = text;
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = speech.rate; u.lang = "en-US";   // replaced below when a voice is chosen
+  const v = pickVoice(); if (v) { u.voice = v; u.lang = v.lang; }
+  u.onend = () => { if (token === speech.token) speakNextChunk(); };
+  u.onerror = e => {
+    if (token !== speech.token || e.error === "interrupted" || e.error === "canceled") return;
+    stopSpeech();
+    toast(e.error === "not-allowed" ? "Tap 🔊 again to start reading." : "Read aloud isn't available in this browser.");
+  };
+  speechSynthesis.speak(u);
+}
+function finishItem() {
+  const card = cardFor(speech.items[speech.index]); if (card) card.classList.remove("speaking");
+  if (speech.index < speech.items.length - 1) { speech.index++; playerUI(); const token = ++speech.token; setTimeout(() => { if (token === speech.token && speech.playing) speakCurrentItem(); }, 700); }
+  else { stopSpeech(); toast("Finished reading"); }
+}
+function stopSpeech() {
+  if (!speech.supported) return;
+  speech.token++; speech.playing = false; speech.paused = false; speech.queue = []; speech.current = "";
+  try { speechSynthesis.cancel(); } catch (e) {}
+  app.querySelectorAll("article.q.speaking").forEach(c => c.classList.remove("speaking"));
+  playerUI();
+}
+function restartChunk() {          // cancel and re-speak the current sentence (used by resume / speed change)
+  speech.token++; try { speechSynthesis.cancel(); } catch (e) {}
+  if (speech.current) speech.queue.unshift(speech.current);
+  speakNextChunk();
+}
+document.getElementById("player-pause").onclick = () => {
+  if (!speech.playing) return;
+  if (speech.paused) { speech.paused = false; playerUI(); if (!speech.current && !speech.queue.length) speakCurrentItem(); else restartChunk(); }
+  else { speech.paused = true; speech.token++; try { speechSynthesis.cancel(); } catch (e) {} playerUI(); }
+};
+document.getElementById("player-next").onclick = () => {
+  if (!speech.playing || speech.index >= speech.items.length - 1) return;
+  speech.token++; try { speechSynthesis.cancel(); } catch (e) {}
+  const card = cardFor(speech.items[speech.index]); if (card) card.classList.remove("speaking");
+  speech.index++; speech.paused = false; speakCurrentItem();
+};
+// ----- Voice & speed settings -----
+function voiceTip() {
+  const ua = navigator.userAgent;
+  if (/iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1))
+    return "For a more natural voice: Settings → Accessibility → Spoken Content → Voices → English → download a “Premium” or “Enhanced” voice (e.g. Ava, Zoe), then reload this page.";
+  if (/Macintosh/.test(ua))
+    return "For a more natural voice: System Settings → Accessibility → Spoken Content → System voice → Manage Voices → download a “Premium” voice (e.g. Ava, Zoe), then reload.";
+  if (/Android/.test(ua))
+    return "For a more natural voice: Settings → Text-to-speech output → Speech Services by Google → Install voice data → English → choose a high-quality voice.";
+  if (/Edg\//.test(ua)) return "Tip: voices marked “Natural” sound the most human.";
+  return "Tip: “Google” voices sound better than the defaults. For the most natural voices, open this page in Microsoft Edge (“Natural” voices).";
+}
+function fillVoiceSettings() {
+  const vs = document.getElementById("voice-select"), rs = document.getElementById("rate-select");
+  const ranked = rankVoices(speechSynthesis.getVoices(), navigator.language || "en-US").slice(0, 40);
+  const best = ranked[0];
+  vs.innerHTML = `<option value="">Auto${best ? ` (${esc(best.name)})` : ""}</option>` +
+    ranked.map(v => `<option value="${esc(v.name)}"${v.name === state.prefs.voiceName ? " selected" : ""}>${esc(v.name)}${v.localService ? "" : " · online"}</option>`).join("");
+  rs.innerHTML = speech.rates.map(r => `<option value="${r}"${r === speech.rate ? " selected" : ""}>${r}×</option>`).join("");
+  document.getElementById("voice-tip").textContent = voiceTip();
+}
+document.getElementById("player-voice").onclick = () => {
+  const panel = document.getElementById("player-settings"), btn = document.getElementById("player-voice");
+  panel.hidden = !panel.hidden; btn.setAttribute("aria-expanded", String(!panel.hidden));
+  if (!panel.hidden) fillVoiceSettings();
+};
+document.getElementById("voice-select").onchange = e => {
+  state.prefs.voiceName = e.target.value || null; saveState();
+  if (speech.playing && !speech.paused) restartChunk();
+};
+document.getElementById("rate-select").onchange = e => {
+  speech.rate = Number(e.target.value); state.prefs.rate = speech.rate; saveState();
+  if (speech.playing && !speech.paused) restartChunk();
+};
+document.getElementById("player-stop").onclick = stopSpeech;
+if (speech.supported) {
+  speechSynthesis.getVoices();
+  speechSynthesis.onvoiceschanged = () => { if (!document.getElementById("player-settings").hidden) fillVoiceSettings(); };
+}
+
+// ===================== Router & boot =====================
+function route() {
+  if (!site) return;                             // questions not loaded yet; boot will route
+  stopSpeech();
+  searchInput.value = "";                      // navigating anywhere closes search
+  searchInput.placeholder = placeholderFor(null);  // topic pages override this
+  const raw = location.hash.replace(/^#/, "") || "/";
+  const h = decodeURIComponent(raw);
+  const m = h.match(/^\/t\/(topics\/[^/]+\.md)(?:\/(\d+))?$/);
+  if (m) renderTopic(m[1], m[2] ? Number(m[2]) : null);
+  else if (h === "/revise") renderRevise();
+  else if (h === "/account") renderAccount();
+  else renderHome();
+}
+
+if (repoPath()) document.getElementById("repo-link").href = "https://github.com" + repoPath();
+renderChip();
+window.addEventListener("hashchange", route);
+initFirebase();                                 // in parallel with loading questions, so sign-in restores quickly
+loadAll().then(() => { route(); }).catch(err => {
+  app.innerHTML = `<div class="empty">Couldn't load the questions (${esc(err.message)}).<br>If you opened this file directly, serve the repo folder instead, e.g. <code>python3 -m http.server</code>.</div>`;
+});
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+}
+</script>
+</body>
+</html>
