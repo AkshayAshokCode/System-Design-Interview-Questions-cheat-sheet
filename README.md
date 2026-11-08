@@ -1,6 +1,6 @@
 # System Design Interview Questions – Cheat Sheet
 
-A revision guide for system design interviews: **340+ questions with interview-ready answers**, split into 22 topics. It covers the building blocks (caching, databases, sharding, consistency, messaging), 37 full FAANG-style design walkthroughs, mobile system design, low-level design, scenario-based "what would you do if…" questions, and AI/LLM systems.
+A revision guide for system design interviews: **370+ questions with interview-ready answers**, split into 23 topics. It covers the building blocks (caching, databases, sharding, consistency, messaging), 37 full FAANG-style design walkthroughs, mobile system design, low-level design, scenario-based "what would you do if…" questions, AI/LLM systems, and **company-wise questions** from Google, Meta, Amazon, Netflix, Uber, Stripe, Flipkart, Swiggy, PhonePe, Zerodha, Hotstar and more.
 
 Every answer is hidden in a collapsible block, so you can **test yourself first** and then click to check.
 
@@ -76,6 +76,7 @@ Also see the platform repos: **[Android Interview Questions](https://github.com/
 | 20 | [Scenario-Based Questions](topics/20-scenario-based.md) | 25 | Latency spikes, DB at 95% CPU, 10× traffic, celebrity posts, cache down, region outage, double charges, migrations |
 | 21 | [Low-Level Design](topics/21-low-level-design.md) | 16 | Approach, SOLID, patterns, concurrency; parking lot, elevator, LRU cache, rate limiter, vending machine, BookMyShow, Splitwise |
 | 22 | [AI/ML Systems & What's New](topics/22-ai-ml-whats-new.md) | 17 | Recommendations, vector search, RAG, ChatGPT design, LLM serving, agents, fraud, moderation, Kubernetes, edge, local-first |
+| 23 | [Company-Wise Questions](topics/23-company-wise-questions.md) | 26 | What Google, Meta, Amazon, Microsoft, Apple, Netflix, Uber, Stripe and Indian product companies ask; Gmail, Calendar, view counter, A/B testing, webhooks, UPI, stock ticker, Hotstar |
 
 ---
 
@@ -98,7 +99,7 @@ Also see the platform repos: **[Android Interview Questions](https://github.com/
 | 11 | 17 Social & Media designs (practise 3 out loud) |
 | 12 | 18 Location & Commerce designs (practise 3 out loud) |
 | 13 | 20 Scenarios + 21 Low-Level Design (or 19 Mobile if you're a mobile engineer) |
-| 14 | 22 AI/ML & What's New + Last-Minute Revision + one full mock interview |
+| 14 | 23 Company-Wise (your target companies) + 22 AI/ML & What's New + Last-Minute Revision + one full mock interview |
 
 **2 days before:** the framework (01), estimation numbers (02), caching (06), sharding (08), consistency (09), the five most common designs (URL shortener, rate limiter, news feed, chat, Uber), scenarios (20) and the list below.
 

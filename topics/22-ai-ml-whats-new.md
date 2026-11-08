@@ -295,4 +295,4 @@ The interview takeaway: "manual sharding" is now one option among several; justi
 
 ---
 
-[⬅ Previous: Low-Level Design](21-low-level-design.md) · [⬅ Back to index](../README.md)
+[⬅ Previous: Low-Level Design](21-low-level-design.md) · [⬅ Back to index](../README.md) · [Next: Company-Wise Questions ➡](23-company-wise-questions.md)

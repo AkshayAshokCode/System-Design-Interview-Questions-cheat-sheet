@@ -932,13 +932,27 @@ function questionCard(file, q, showSource, query) {
     <div class="answer" hidden></div>
   </article>`;
 }
+// Point links inside answers at tracker pages: other topics, questions in this topic, the index; open external links in a new tab.
+function fixLinks(root, file) {
+  root.querySelectorAll("a[href]").forEach(a => {
+    const href = a.getAttribute("href");
+    if (/^https?:/i.test(href)) { a.target = "_blank"; a.rel = "noopener"; return; }
+    const m = href.match(/^(?:\.\/|topics\/)?([\w.-]+\.md)?(?:#(\d+)-[\w-]*)?$/);
+    if (!m || (!m[1] && !m[2])) return;
+    if (m[1] === "README.md" || /^\.\.\/README\.md/.test(href)) { a.setAttribute("href", "#/"); return; }
+    const target = m[1] ? "topics/" + m[1] : file;
+    if (!topics[target]) return;
+    a.setAttribute("href", `#/t/${encodeURIComponent(target)}${m[2] ? "/" + m[2] : ""}`);
+  });
+  root.querySelectorAll('a[href^="../README.md"]').forEach(a => a.setAttribute("href", "#/"));
+}
 function bindCards(onChange) {
   app.querySelectorAll("article.q").forEach(card => {
     const file = card.dataset.file, n = Number(card.dataset.n);
     const q = topics[file].questions.find(x => x.n === n);
     const ans = card.querySelector(".answer"), show = card.querySelector(".show-btn");
     show.onclick = () => {
-      if (!ans.dataset.rendered) { ans.innerHTML = marked.parse(q.answer); ans.dataset.rendered = "1"; renderDiagrams(ans); }
+      if (!ans.dataset.rendered) { ans.innerHTML = marked.parse(q.answer); ans.dataset.rendered = "1"; fixLinks(ans, file); renderDiagrams(ans); }
       ans.hidden = !ans.hidden;
       show.textContent = ans.hidden ? "Show answer" : "Hide answer";
       show.setAttribute("aria-expanded", String(!ans.hidden));
