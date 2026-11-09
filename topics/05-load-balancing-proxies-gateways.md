@@ -204,6 +204,19 @@ Also avoid a single LB layer per region being the only path; multi-AZ placement 
 
 </details>
 
+### 15. API gateway vs load balancer vs reverse proxy – what's the difference?
+
+<details>
+<summary>Answer</summary>
+
+- **Reverse proxy** – the general idea: a server in front of backends that receives client requests and forwards them (Nginx, Envoy). Adds TLS termination, caching, compression.
+- **Load balancer** – a reverse proxy (or network device) whose main job is **spreading traffic** across identical instances and removing unhealthy ones. L4 or L7.
+- **API gateway** – an L7 reverse proxy focused on **API management**: routing to many different services, authentication, rate limits and quotas, request transformation, API keys, analytics.
+
+In a typical setup: DNS/CDN → load balancer → API gateway → services (each service may have its own internal load balancing). The lines blur – Envoy can do all three.
+
+</details>
+
 ---
 
 [⬅ Previous: Networking & Protocols](04-networking-protocols.md) · [⬅ Back to index](../README.md) · [Next: Caching ➡](06-caching.md)

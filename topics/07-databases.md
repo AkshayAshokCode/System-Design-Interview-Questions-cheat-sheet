@@ -220,6 +220,32 @@ Use online schema-change tools for big tables (gh-ost, pt-online-schema-change, 
 
 </details>
 
+### 18. How do you model data in DynamoDB or Cassandra (query-first design)?
+
+<details>
+<summary>Answer</summary>
+
+In wide-column/key-value stores you design tables **around queries**, not entities:
+1. List every access pattern ("get a user's orders newest first", "get an order by ID").
+2. Choose a **partition key** that spreads load and groups data read together (e.g. `user_id`), and a **sort/clustering key** for ordering and range queries (e.g. `order_date#order_id`).
+3. **Duplicate data** into another table (or a global secondary index) for each additional access pattern, e.g. `orders_by_status`.
+4. Avoid scans and cross-partition joins; keep partitions bounded (bucket by time if a partition could grow forever, e.g. `chat_id + month`).
+
+DynamoDB's **single-table design** stores several entity types in one table with generic keys (`PK = USER#42`, `SK = ORDER#2025-01-01#9`) so related items come back in one query. The trade-off: very fast, predictable queries at any scale, but new query patterns require new tables/indexes and data backfills.
+
+</details>
+
+### 19. Clustered vs non-clustered (secondary) indexes?
+
+<details>
+<summary>Answer</summary>
+
+- **Clustered index** – the table's rows are **stored in the index order** (InnoDB stores rows in the primary key B+ tree). There's only one per table. Range scans on the key are very fast. Random primary keys (UUIDv4) cause page splits and fragmentation – a reason to prefer sequential/time-ordered IDs.
+- **Non-clustered (secondary) index** – a separate structure mapping indexed values to row locations (or primary keys). A lookup may need a second step to fetch the row (a "bookmark lookup"), unless the index is **covering** (includes all needed columns).
+- Postgres stores tables as heaps; all its indexes are secondary (it can physically reorder with `CLUSTER`, but doesn't maintain it).
+
+</details>
+
 ---
 
 [⬅ Previous: Caching](06-caching.md) · [⬅ Back to index](../README.md) · [Next: Replication, Partitioning & Sharding ➡](08-replication-sharding.md)

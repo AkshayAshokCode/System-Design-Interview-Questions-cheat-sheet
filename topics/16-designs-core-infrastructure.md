@@ -360,6 +360,132 @@ flowchart TD
 
 </details>
 
+### 12. Design Pastebin.
+
+<details>
+<summary>Answer</summary>
+
+**Requirements** – users paste text and get a short link; optional expiry, visibility (public/unlisted/private), syntax highlighting; read-heavy; pastes up to ~10 MB.
+
+**Design**
+- **Write** – generate a unique key (same options as the [URL shortener](#1-design-a-url-shortener-like-bitly--tinyurl): counter ranges + base62, or random with collision check); store the **content in object storage** (S3) keyed by paste ID and **metadata** (key, owner, size, created, expiry, visibility, content hash) in a KV/SQL database.
+- **Read** – look up metadata (cache hot keys in Redis), fetch content from object storage – or serve it through a **CDN** with long cache lifetimes, since pastes are immutable.
+- **Expiry** – lazy check on read + a background job that deletes expired pastes and their objects (or object-storage lifecycle rules).
+- **Dedup** – identical content can share one stored object (content hash).
+- **Abuse** – rate limits, size limits, malware/secret scanning, takedown flow.
+
+Difference from the URL shortener: the payload is large, so storage and CDN delivery matter more than the redirect path.
+
+</details>
+
+### 13. Design a content delivery network (CDN).
+
+<details>
+<summary>Answer</summary>
+
+**Requirements** – serve static and cacheable content from locations near users worldwide; reduce origin load; high availability; purge/invalidation; TLS; DDoS resilience.
+
+```mermaid
+flowchart TD
+    U["User"] -->|"DNS geo-routing or anycast"| EDGE["Nearest edge PoP<br/>(cache servers)"]
+    EDGE -->|"miss"| MID["Regional / shield cache"]
+    MID -->|"miss"| ORG["Origin servers / object storage"]
+    CP["Control plane<br/>config, certificates, purge"] -.-> EDGE
+    EDGE -->|"logs"| AN["Analytics pipeline"]
+```
+
+**Deep dives**
+- **Routing** – anycast IPs or DNS returning the closest healthy PoP based on latency measurements.
+- **Cache hierarchy** – edge → regional shield → origin. The shield collapses misses so the origin sees one request per object, and **request coalescing** merges concurrent misses for the same object.
+- **Within a PoP** – consistent hashing of URLs across cache servers so each object lives on one (or a few) servers; memory for hot objects, SSD for the long tail.
+- **Cache keys and rules** – based on URL + selected headers (`Vary`), TTLs from `Cache-Control`, stale-while-revalidate, query-string handling.
+- **Invalidation** – purge by URL/tag pushed from the control plane to all PoPs (eventually consistent within seconds); prefer versioned file names.
+- **TLS** at the edge with certificates distributed securely; HTTP/2 and HTTP/3.
+- **Resilience** – absorb DDoS with huge distributed capacity; withdraw failing PoPs from anycast; serve stale content if the origin is down.
+
+</details>
+
+### 14. Design a distributed logging system (like ELK / Splunk).
+
+<details>
+<summary>Answer</summary>
+
+**Requirements** – collect logs from thousands of services, search them within seconds, keep them for weeks (hot) to years (cold, for audit), alert on patterns, control cost.
+
+**Design**
+- **Collection** – agents on each host (Fluent Bit, Vector, OpenTelemetry Collector) tail files/stdout, add metadata (service, host, trace ID), batch and compress.
+- **Buffer** – Kafka absorbs spikes and decouples producers from indexing.
+- **Processing** – parse structured logs, enrich, redact PII, drop or sample noisy debug logs.
+- **Storage and indexing** – recent logs in a searchable store (Elasticsearch/OpenSearch, ClickHouse, Loki which indexes only labels, not full text); time-based indices/partitions; older data rolled to object storage in compressed columnar form, queryable on demand.
+- **Query and alerting** – search UI, saved queries, alerts on error rates or patterns, links from traces to logs via trace IDs.
+- **Cost** – logs are often one of the largest observability costs: structured logs, sampling, retention tiers, and limiting high-cardinality fields.
+
+</details>
+
+### 15. Design an authentication service (login, sessions, SSO, MFA).
+
+<details>
+<summary>Answer</summary>
+
+**Requirements** – sign-up/login with password, social login and enterprise SSO; multi-factor authentication; sessions across web and mobile; token issuance for APIs; account recovery; brute-force protection; very high availability (if auth is down, everything is down).
+
+**Design**
+- **Identity store** – users, credentials (Argon2id hashes), MFA factors, linked identities; strongly consistent DB.
+- **Login flow** – verify password (rate-limited by IP and account, breached-password check), then MFA (TOTP, WebAuthn/passkeys, SMS as fallback), risk-based checks (new device/location).
+- **Tokens** – an OAuth 2.0 / OIDC authorisation server issuing **short-lived access tokens** (JWT signed with rotating keys, published via a JWKS endpoint so services verify locally) and **refresh tokens** stored server-side with rotation and reuse detection.
+- **Sessions** – web uses `HttpOnly`, `Secure`, `SameSite` cookies; a session store (Redis) allows revocation ("log out all devices").
+- **SSO** – SAML/OIDC federation with enterprise identity providers; SCIM for user provisioning.
+- **Recovery** – single-use, expiring reset tokens; notify on sensitive changes.
+- **Availability and scale** – token verification is local (no call to auth per request); the auth service itself is multi-region with replicated data; protect it with rate limits and bot detection.
+- **Audit** – log all authentication events for security monitoring.
+
+</details>
+
+### 16. Design a feature flag / remote configuration service.
+
+<details>
+<summary>Answer</summary>
+
+**Requirements** – teams create flags and configs with targeting rules (percentage rollouts, user segments, regions); services and apps evaluate flags with **near-zero latency**; changes propagate within seconds; safe when the service is unreachable; full audit history.
+
+**Design**
+- **Control plane** – UI/API to edit flags, stored in a versioned database with approvals and audit logs.
+- **Distribution** – compiled flag rules are published to a fast delivery layer (CDN-hosted JSON, or a streaming endpoint/SSE that pushes changes to SDKs).
+- **SDKs** – evaluate rules **locally in memory** (hash of user ID for stable percentage rollouts), cache the last config on disk, fall back to code defaults; never make a network call per flag check.
+- **Consistency** – each config has a version; clients report the version they're using for debugging.
+- **Safety** – staged rollouts of config changes, validation (schemas), instant kill switches, and automatic rollback tied to monitoring.
+- **Experiments** – exposure events logged for A/B analysis.
+
+</details>
+
+### 17. Design a code deployment system (CI/CD at scale).
+
+<details>
+<summary>Answer</summary>
+
+**Requirements** – build and test every change, produce versioned artefacts, deploy to thousands of servers across regions safely, roll back fast, and record who deployed what.
+
+```mermaid
+flowchart TD
+    C["Commit / merge"] --> CI["CI: build + tests<br/>(parallel workers, caching)"]
+    CI --> ART[("Artefact registry<br/>immutable, versioned images")]
+    ART --> CD["Deployment orchestrator<br/>pipeline per service"]
+    CD --> W1["Wave 1: canary hosts"]
+    W1 -->|"health checks pass"| W2["Wave 2: one AZ / region"]
+    W2 -->|"pass"| W3["Wave 3: everywhere"]
+    MON["Metrics + alarms"] -->|"regression → automatic rollback"| CD
+```
+
+**Deep dives**
+- **Builds** – hermetic, cached builds (Bazel-style remote caching), test sharding across many workers, only testing what changed in a monorepo.
+- **Artefacts** – immutable container images or packages identified by commit SHA; deploy the same artefact to every environment.
+- **Rollout** – canary → waves by AZ/region with **bake time** and automated health checks (error rate, latency, business metrics) between waves; feature flags separate deploy from release.
+- **Distribution to many hosts** – pull-based agents on hosts or a container orchestrator; peer-to-peer or regional caches for large artefacts.
+- **Rollback** – redeploy the previous artefact quickly; DB migrations must be backward compatible (expand and contract).
+- **Governance** – approvals for sensitive services, deploy freezes, audit trail.
+
+</details>
+
 ---
 
 [⬅ Previous: Big Data & Stream Processing](15-big-data-streaming.md) · [⬅ Back to index](../README.md) · [Next: Designs – Social, Media & Collaboration ➡](17-designs-social-media.md)

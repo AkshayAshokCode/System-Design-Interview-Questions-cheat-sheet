@@ -398,6 +398,41 @@ flowchart TD
 
 </details>
 
+### 13. Design Tinder (location-based matching).
+
+<details>
+<summary>Answer</summary>
+
+**Requirements** – users create profiles with photos and preferences (age, distance, gender); swipe through nearby recommended profiles; a **match** happens when both swipe right; matched users can chat. Tens of millions of DAU; billions of swipes per day.
+
+**Design**
+- **Profiles** – profile service + DB; photos in object storage via CDN.
+- **Recommendations** – find candidates near the user: a geo index (geohash cells / Elasticsearch geo queries) filtered by preferences and excluding people already swiped; rank by an ML model (likelihood of mutual interest, activity, freshness). **Precompute a queue** of candidates per user in the background so swiping is instant.
+- **Swipes** – very high write volume: write to a swipe store partitioned by `swiper_id` (Cassandra/DynamoDB): `(swiper, target) → like/pass`.
+- **Match detection** – when A likes B, check whether B already liked A (point lookup on B's swipes for A). If yes, create a match atomically (idempotently – both could swipe at the same moment) and notify both via push/WebSocket.
+- **Chat** – reuse the [chat design](#4-design-a-chat-app-like-whatsapp--messenger), limited to matched pairs.
+- **Location updates** – update the user's geo cell when they move significantly, not continuously.
+- **Abuse and safety** – rate-limit swipes, detect bots and fake profiles, photo moderation, block/report.
+
+</details>
+
+### 14. Design an online presence system ("online / last seen").
+
+<details>
+<summary>Answer</summary>
+
+**Requirements** – show whether contacts are online and when they were last seen, update within seconds, for hundreds of millions of users; presence is high-churn and doesn't need perfect accuracy.
+
+**Design**
+- **Heartbeats** – clients with an open connection (WebSocket gateway) send a heartbeat every ~30 s; the gateway updates presence on connect, heartbeat and disconnect.
+- **Store** – an in-memory, TTL-based store (Redis: `presence:{user} = online` with TTL ~60 s; `last_seen:{user} = timestamp`). If heartbeats stop (app killed, network lost), the key expires and the user is offline – no explicit "goodbye" required.
+- **Fan-out** – don't broadcast every change to every contact. Instead: subscribe only while a contact's chat or list is **visible**, or fetch presence in batches when a screen opens. For large friend lists, fan out only to currently online contacts.
+- **Debouncing** – ignore rapid online/offline flapping (brief network drops) with a short grace period.
+- **Privacy** – respect settings ("hide last seen") at read time.
+- **Scale** – presence store sharded by user ID; gateways publish changes through pub/sub to the gateways holding interested subscribers.
+
+</details>
+
 ---
 
 [⬅ Previous: Designs – Core Infrastructure](16-designs-core-infrastructure.md) · [⬅ Back to index](../README.md) · [Next: Designs – Location, Commerce & Fintech ➡](18-designs-location-commerce.md)

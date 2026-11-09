@@ -225,6 +225,46 @@ Creating a TCP + TLS connection costs 1–3 round trips. **Keep-alive** reuses o
 
 </details>
 
+### 16. Explain the OSI model briefly. Which layers matter in system design?
+
+<details>
+<summary>Answer</summary>
+
+| Layer | Name | Examples |
+|---|---|---|
+| 7 | Application | HTTP, gRPC, DNS, SMTP, WebSocket |
+| 6 | Presentation | Encoding, compression, TLS (often placed here) |
+| 5 | Session | Session setup and teardown |
+| 4 | Transport | TCP, UDP, QUIC |
+| 3 | Network | IP, routing, ICMP |
+| 2 | Data link | Ethernet, Wi-Fi, MAC addresses |
+| 1 | Physical | Cables, radio |
+
+In practice engineers use the simpler **TCP/IP model** (application, transport, internet, link). For system design, layers **4 and 7** matter most: L4 vs L7 load balancers, TCP vs UDP, and HTTP-level routing, caching and security.
+
+</details>
+
+### 17. What are the HTTP methods, which are idempotent, and PUT vs PATCH vs POST?
+
+<details>
+<summary>Answer</summary>
+
+| Method | Purpose | Safe | Idempotent |
+|---|---|---|---|
+| GET | Read a resource | Yes | Yes |
+| HEAD / OPTIONS | Headers only / capabilities (CORS) | Yes | Yes |
+| POST | Create a resource or trigger an action | No | **No** |
+| PUT | **Replace** a resource entirely (or create at a known URL) | No | Yes |
+| PATCH | **Partially update** a resource | No | Not necessarily |
+| DELETE | Remove a resource | No | Yes |
+
+- **Safe** = no side effects; **idempotent** = repeating the request has the same effect as doing it once (important for retries).
+- Use **POST** with an `Idempotency-Key` header when retries must not create duplicates.
+
+Status codes to know: 200 OK, 201 Created, 202 Accepted (async processing), 204 No Content, 301/302/304, 400 Bad Request, 401 Unauthorized (not authenticated), 403 Forbidden (not allowed), 404, 409 Conflict, 422 Unprocessable, 429 Too Many Requests, 500, 502 Bad Gateway, 503 Service Unavailable, 504 Gateway Timeout.
+
+</details>
+
 ---
 
 [⬅ Previous: Scalability Fundamentals](03-scalability-fundamentals.md) · [⬅ Back to index](../README.md) · [Next: Load Balancing, Proxies & API Gateways ➡](05-load-balancing-proxies-gateways.md)

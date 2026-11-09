@@ -287,6 +287,20 @@ You can never perfectly distinguish a dead node from a slow one, which is why fe
 
 </details>
 
+### 19. What is Byzantine fault tolerance, and do typical systems need it?
+
+<details>
+<summary>Answer</summary>
+
+- **Crash faults** – nodes stop or are slow, but don't lie. Raft and Paxos tolerate f crash failures with 2f + 1 nodes.
+- **Byzantine faults** – nodes may behave **arbitrarily or maliciously** (send conflicting messages, corrupt data). Byzantine fault-tolerant protocols (PBFT, Tendermint, HotStuff) need **3f + 1** nodes to tolerate f bad nodes and cost more messages.
+
+Typical company systems run inside a trusted environment, so they assume crash faults and protect against corruption with checksums and authentication. BFT matters in blockchains and systems where participants don't trust each other.
+
+The related **Two Generals problem** shows that two parties can never be certain of agreement over an unreliable channel – which is why distributed systems rely on timeouts, retries, idempotency and acknowledgements rather than certainty.
+
+</details>
+
 ---
 
 [⬅ Previous: Replication, Partitioning & Sharding](08-replication-sharding.md) · [⬅ Back to index](../README.md) · [Next: Storage, Search & Specialised Data Systems ➡](10-storage-search-specialized.md)

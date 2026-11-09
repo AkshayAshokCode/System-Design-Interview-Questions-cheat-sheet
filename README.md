@@ -1,6 +1,6 @@
 # System Design Interview Questions – Cheat Sheet
 
-A revision guide for system design interviews: **370+ questions with interview-ready answers**, split into 23 topics. It covers the building blocks (caching, databases, sharding, consistency, messaging), 50 full FAANG-style design walkthroughs, mobile system design, low-level design, scenario-based "what would you do if…" questions, AI/LLM systems, and **company-wise questions** from Google, Meta, Amazon, Netflix, Uber, Stripe, Flipkart, Swiggy, PhonePe, Zerodha, Hotstar and more.
+A revision guide for system design interviews: **390+ questions with interview-ready answers**, split into 23 topics. It covers the building blocks (caching, databases, sharding, consistency, messaging), 58 full FAANG-style design walkthroughs, mobile system design, low-level design, scenario-based "what would you do if…" questions, AI/LLM systems, and **company-wise questions** from Google, Meta, Amazon, Netflix, Uber, Stripe, Flipkart, Swiggy, PhonePe, Zerodha, Hotstar and more.
 
 Every answer is hidden in a collapsible block, so you can **test yourself first** and then click to check.
 
@@ -37,25 +37,25 @@ Also see the platform repos: **[Android Interview Questions](https://github.com/
 | # | Topic | Questions | Key areas |
 |---|---|---|---|
 | 03 | [Scalability Fundamentals](topics/03-scalability-fundamentals.md) | 16 | Vertical vs horizontal, stateless, latency vs throughput, SLA/SLO/SLI, scaling reads and writes |
-| 04 | [Networking & Protocols](topics/04-networking-protocols.md) | 15 | DNS, TCP/UDP, HTTP/1.1/2/3, TLS, REST vs GraphQL vs gRPC, WebSockets/SSE, CDN, pagination |
-| 05 | [Load Balancing, Proxies & API Gateways](topics/05-load-balancing-proxies-gateways.md) | 14 | L4 vs L7, algorithms, health checks, consistent hashing, API gateway, service mesh, rate limiting |
+| 04 | [Networking & Protocols](topics/04-networking-protocols.md) | 17 | DNS, TCP/UDP, HTTP/1.1/2/3, TLS, REST vs GraphQL vs gRPC, WebSockets/SSE, CDN, pagination |
+| 05 | [Load Balancing, Proxies & API Gateways](topics/05-load-balancing-proxies-gateways.md) | 15 | L4 vs L7, algorithms, health checks, consistent hashing, API gateway, service mesh, rate limiting |
 | 06 | [Caching](topics/06-caching.md) | 15 | Cache-aside vs write-through/back, eviction, invalidation, stampede, hot keys, Redis vs Memcached |
 
 ### 🗄 Data
 
 | # | Topic | Questions | Key areas |
 |---|---|---|---|
-| 07 | [Databases: SQL, NoSQL & Indexing](topics/07-databases.md) | 17 | SQL vs NoSQL, ACID, NoSQL families, indexes, B-tree vs LSM, NewSQL, zero-downtime migrations |
+| 07 | [Databases: SQL, NoSQL & Indexing](topics/07-databases.md) | 19 | SQL vs NoSQL, ACID, NoSQL families, indexes, B-tree vs LSM, NewSQL, zero-downtime migrations |
 | 08 | [Replication, Partitioning & Sharding](topics/08-replication-sharding.md) | 16 | Leader-follower, multi-leader, quorums, failover, shard keys, hot spots, rebalancing |
-| 09 | [Consistency, Transactions & Consensus](topics/09-consistency-transactions-consensus.md) | 18 | CAP/PACELC, isolation levels, locking, 2PC, sagas, outbox, idempotency, Raft, clocks, CRDTs |
+| 09 | [Consistency, Transactions & Consensus](topics/09-consistency-transactions-consensus.md) | 19 | CAP/PACELC, isolation levels, locking, 2PC, sagas, outbox, idempotency, Raft, clocks, CRDTs |
 | 10 | [Storage, Search & Specialised Data Systems](topics/10-storage-search-specialized.md) | 15 | Object storage, erasure coding, inverted indexes, geohash/quadtree/H3, time-series, Bloom filters |
 
 ### 🔀 Architecture & Operations
 
 | # | Topic | Questions | Key areas |
 |---|---|---|---|
-| 11 | [Messaging & Event-Driven Architecture](topics/11-messaging-event-driven.md) | 15 | Queues vs pub/sub vs logs, Kafka internals, ordering, DLQs, backpressure, event sourcing, CQRS, CDC |
-| 12 | [Microservices & Architecture Patterns](topics/12-microservices-patterns.md) | 18 | Monolith vs microservices, boundaries, retries, circuit breakers, bulkheads, BFF, strangler fig, cells |
+| 11 | [Messaging & Event-Driven Architecture](topics/11-messaging-event-driven.md) | 16 | Queues vs pub/sub vs logs, Kafka internals, ordering, DLQs, backpressure, event sourcing, CQRS, CDC |
+| 12 | [Microservices & Architecture Patterns](topics/12-microservices-patterns.md) | 19 | Monolith vs microservices, boundaries, retries, circuit breakers, bulkheads, BFF, strangler fig, cells |
 | 13 | [Reliability, Observability & Operations](topics/13-reliability-observability.md) | 17 | Multi-AZ/region, RPO/RTO, cascading failures, logs/metrics/traces, canary deploys, incidents |
 | 14 | [Security in System Design](topics/14-security.md) | 15 | Sessions vs JWT, OAuth/OIDC, RBAC/ReBAC, encryption, KMS, DDoS, zero trust, GDPR |
 | 15 | [Big Data & Stream Processing](topics/15-big-data-streaming.md) | 15 | OLTP vs OLAP, lakehouse, batch vs stream, Spark, Flink, watermarks, Lambda vs Kappa, top-K |
@@ -64,8 +64,8 @@ Also see the platform repos: **[Android Interview Questions](https://github.com/
 
 | # | Topic | Questions | Key areas |
 |---|---|---|---|
-| 16 | [Designs – Core Infrastructure](topics/16-designs-core-infrastructure.md) | 11 | URL shortener, rate limiter, ID generator, KV store, distributed cache, crawler, notifications, typeahead, scheduler, message queue, monitoring |
-| 17 | [Designs – Social, Media & Collaboration](topics/17-designs-social-media.md) | 12 | News feed, Twitter, Instagram, WhatsApp, YouTube, live streaming, Dropbox, Google Docs, Reddit, search engine, Spotify, Zoom |
+| 16 | [Designs – Core Infrastructure](topics/16-designs-core-infrastructure.md) | 17 | URL shortener, rate limiter, ID generator, KV store, distributed cache, crawler, notifications, typeahead, scheduler, message queue, monitoring, Pastebin, CDN, logging, auth/SSO, feature flags, CI/CD |
+| 17 | [Designs – Social, Media & Collaboration](topics/17-designs-social-media.md) | 14 | News feed, Twitter, Instagram, WhatsApp, YouTube, live streaming, Dropbox, Google Docs, Reddit, search engine, Spotify, Zoom, Tinder, online presence |
 | 18 | [Designs – Location, Commerce & Fintech](topics/18-designs-location-commerce.md) | 14 | Uber, Yelp, Google Maps, food delivery, Ticketmaster, Amazon, flash sale, payments, wallet, hotel booking, stock exchange, ad clicks, leaderboard, LeetCode |
 | 19 | [Mobile System Design](topics/19-mobile-system-design.md) | 16 | Client architecture, mobile APIs, offline-first sync, real-time, push, caching, background limits, feed/chat/image loader designs |
 
@@ -74,7 +74,7 @@ Also see the platform repos: **[Android Interview Questions](https://github.com/
 | # | Topic | Questions | Key areas |
 |---|---|---|---|
 | 20 | [Scenario-Based Questions](topics/20-scenario-based.md) | 25 | Latency spikes, DB at 95% CPU, 10× traffic, celebrity posts, cache down, region outage, double charges, migrations |
-| 21 | [Low-Level Design](topics/21-low-level-design.md) | 16 | Approach, SOLID, patterns, concurrency; parking lot, elevator, LRU cache, rate limiter, vending machine, BookMyShow, Splitwise |
+| 21 | [Low-Level Design](topics/21-low-level-design.md) | 23 | Approach, SOLID, patterns, concurrency; parking lot, elevator, LRU cache, rate limiter, vending machine, BookMyShow, Splitwise, ATM, file system, undo/redo, blocking queue |
 | 22 | [AI/ML Systems & What's New](topics/22-ai-ml-whats-new.md) | 17 | Recommendations, vector search, RAG, ChatGPT design, LLM serving, agents, fraud, moderation, Kubernetes, edge, local-first |
 | 23 | [Company-Wise Questions](topics/23-company-wise-questions.md) | 26 | What Google, Meta, Amazon, Microsoft, Apple, Netflix, Uber, Stripe and Indian product companies ask; Gmail, Calendar, view counter, A/B testing, webhooks, UPI, stock ticker, Hotstar |
 

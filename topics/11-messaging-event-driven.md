@@ -236,6 +236,18 @@ Rule of thumb: use sync when the caller **needs the answer now** to respond (get
 
 </details>
 
+### 16. Push vs pull consumers – what's the trade-off?
+
+<details>
+<summary>Answer</summary>
+
+- **Push** (RabbitMQ, SNS, webhooks) – the broker sends messages to consumers as they arrive. Low latency, but the broker must track consumer capacity (prefetch limits) or it can overwhelm slow consumers.
+- **Pull** (Kafka, SQS) – consumers request messages when ready. Natural **backpressure** (consumers only take what they can handle), easy batching and replay, but slightly more latency and polling overhead (mitigated with long polling).
+
+Pull suits high-throughput pipelines and variable consumer speed; push suits low-latency notifications and simple fan-out.
+
+</details>
+
 ---
 
 [⬅ Previous: Storage, Search & Specialised Data Systems](10-storage-search-specialized.md) · [⬅ Back to index](../README.md) · [Next: Microservices & Architecture Patterns ➡](12-microservices-patterns.md)

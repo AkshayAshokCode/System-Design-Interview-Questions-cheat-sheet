@@ -230,6 +230,22 @@ Microservices that are so tightly coupled they behave like a monolith with netwo
 
 </details>
 
+### 19. Containers vs virtual machines, and what does Kubernetes do?
+
+<details>
+<summary>Answer</summary>
+
+- **Virtual machines** virtualise hardware: each VM runs its own OS kernel. Strong isolation, heavier (GBs, slower to boot).
+- **Containers** (Docker) share the host kernel and isolate processes with namespaces and cgroups. Lightweight (MBs), start in seconds, and package an app with its dependencies so it runs the same everywhere.
+
+**Kubernetes** orchestrates containers across a cluster:
+- **Pods** (one or more containers scheduled together), **Deployments** (desired replica count, rolling updates and rollbacks), **Services** (stable virtual IP/DNS and load balancing across pods), **Ingress/Gateway** (HTTP routing from outside), **ConfigMaps/Secrets**, **StatefulSets** (stable identity and storage for databases), **HorizontalPodAutoscaler**.
+- It continuously reconciles actual state to desired state: restarts crashed containers, reschedules pods from failed nodes, and scales replicas.
+
+Trade-off: powerful and standard, but operationally complex – managed services (EKS, GKE, AKS) or simpler platforms reduce the burden.
+
+</details>
+
 ---
 
 [⬅ Previous: Messaging & Event-Driven Architecture](11-messaging-event-driven.md) · [⬅ Back to index](../README.md) · [Next: Reliability, Observability & Operations ➡](13-reliability-observability.md)

@@ -432,6 +432,225 @@ Extensions: per-subscriber queues with offsets (Kafka-like replay), ordering gua
 
 </details>
 
+### 17. Design an ATM system.
+
+<details>
+<summary>Answer</summary>
+
+**Classes** – `ATM` (state, cash dispenser, card reader, bank client), `Card`, `Account`, `Transaction` (abstract: `Withdrawal`, `Deposit`, `BalanceInquiry`, `Transfer`), `CashDispenser`, `BankService` (interface to the bank's backend).
+
+- **State pattern** for the session: `Idle → CardInserted → PinVerified → TransactionSelected → Dispensing → Idle` (and `OutOfService`). Wrong PIN three times → retain card.
+- **Cash dispensing** – **chain of responsibility** over note denominations (2,000 → 500 → 100 handlers), each dispensing as many as possible and passing the remainder on; check the ATM's stock before committing.
+- **Withdrawal correctness** – authorise/debit the account with the bank first (with a transaction ID for idempotency), then dispense; if dispensing fails, reverse the debit. Log every step for reconciliation.
+- **Concurrency** – one session per ATM, but the bank side must handle simultaneous withdrawals from the same account (atomic balance check and debit).
+
+</details>
+
+### 18. Design Tic-tac-toe (N × N, two players).
+
+<details>
+<summary>Answer</summary>
+
+```java
+class TicTacToe {
+    private final int n; private final int[] rows, cols; private int diag, antiDiag;
+    private final char[][] board;
+
+    TicTacToe(int n) { this.n = n; rows = new int[n]; cols = new int[n]; board = new char[n][n]; }
+
+    /** player 1 adds +1, player 2 adds -1; returns the winner (1 or 2) or 0. O(1) per move. */
+    int move(int r, int c, int player) {
+        if (board[r][c] != 0) throw new IllegalArgumentException("Cell taken");
+        board[r][c] = player == 1 ? 'X' : 'O';
+        int v = player == 1 ? 1 : -1;
+        rows[r] += v; cols[c] += v;
+        if (r == c) diag += v;
+        if (r + c == n - 1) antiDiag += v;
+        if (Math.abs(rows[r]) == n || Math.abs(cols[c]) == n || Math.abs(diag) == n || Math.abs(antiDiag) == n) return player;
+        return 0;
+    }
+}
+```
+
+Discuss: O(1) win checking with counters instead of scanning the board; a `Game` class managing turns, `Player` interface (human/computer – Strategy), draw detection (move count = n²), and minimax for an unbeatable AI on 3×3.
+
+</details>
+
+### 19. Design a library management system.
+
+<details>
+<summary>Answer</summary>
+
+**Entities** – `Book` (ISBN, title, authors), `BookCopy` (barcode, status: AVAILABLE/BORROWED/RESERVED/LOST), `Member` (limits, fines), `Loan` (copy, member, issue date, due date, return date), `Reservation` (queue per book), `Librarian`, `Catalog` (search by title/author/subject).
+
+**Key flows**
+- **Checkout** – check member status (no unpaid fines over a limit, under the max-loans limit), pick an available copy, create a loan, mark the copy BORROWED – atomically, so two librarians can't lend the same copy.
+- **Return** – close the loan, compute fines (a `FineStrategy` per member type), and if reservations exist, mark the copy RESERVED and notify the next member (Observer).
+- **Renew** – only if no one has reserved the book.
+- **Search** – index by title, author, subject (a `SearchStrategy` or simple indexes).
+
+Patterns: Strategy (fines, search), Observer (notifications), Repository (persistence), State for copy status.
+
+</details>
+
+### 20. Design an in-memory file system.
+
+<details>
+<summary>Answer</summary>
+
+Support `mkdir(path)`, `ls(path)`, `addContentToFile(path, content)`, `readContentFromFile(path)`, plus delete and move.
+
+```java
+abstract class Node { final String name; Node(String n) { name = n; } }
+class File extends Node { final StringBuilder content = new StringBuilder(); File(String n) { super(n); } }
+class Directory extends Node {
+    final TreeMap<String, Node> children = new TreeMap<>();   // sorted for ls
+    Directory(String n) { super(n); }
+}
+
+class FileSystem {
+    private final Directory root = new Directory("");
+
+    private Directory walk(String[] parts, int upto, boolean create) {
+        Directory cur = root;
+        for (int i = 0; i < upto; i++) {
+            Node next = cur.children.get(parts[i]);
+            if (next == null) {
+                if (!create) throw new NoSuchElementException(parts[i]);
+                next = new Directory(parts[i]); cur.children.put(parts[i], next);
+            }
+            if (!(next instanceof Directory d)) throw new IllegalStateException(parts[i] + " is a file");
+            cur = d;
+        }
+        return cur;
+    }
+    private static String[] split(String path) { return Arrays.stream(path.split("/")).filter(s -> !s.isEmpty()).toArray(String[]::new); }
+
+    void mkdir(String path) { String[] p = split(path); walk(p, p.length, true); }
+
+    List<String> ls(String path) {
+        String[] p = split(path);
+        if (p.length == 0) return new ArrayList<>(root.children.keySet());
+        Node n = walk(p, p.length - 1, false).children.get(p[p.length - 1]);
+        if (n instanceof File) return List.of(n.name);
+        return new ArrayList<>(((Directory) n).children.keySet());
+    }
+
+    void addContentToFile(String path, String content) {
+        String[] p = split(path);
+        Directory dir = walk(p, p.length - 1, true);
+        File f = (File) dir.children.computeIfAbsent(p[p.length - 1], File::new);
+        f.content.append(content);
+    }
+
+    String readContentFromFile(String path) {
+        String[] p = split(path);
+        return ((File) walk(p, p.length - 1, false).children.get(p[p.length - 1])).content.toString();
+    }
+}
+```
+
+This is the **Composite pattern** (files and directories share a `Node` type). Follow-ups: permissions, sizes (aggregate up the tree), search by name/extension (Specification/Strategy filters), and thread safety (read-write locks per directory).
+
+</details>
+
+### 21. Design a meeting room booking system.
+
+<details>
+<summary>Answer</summary>
+
+**Requirements** – rooms with capacity and equipment; book a room for a time interval; no overlapping bookings; find free rooms for a time and size; cancel; recurring meetings (follow-up).
+
+**Design**
+- `Room(id, capacity, features)`, `Booking(id, roomId, start, end, organiser)`, `RoomScheduler`.
+- Store bookings per room in a **sorted structure by start time** (`TreeMap<start, Booking>`). An interval `[s, e)` overlaps if the booking just before `s` ends after `s`, or the booking at/after `s` starts before `e` – an O(log n) check.
+
+```java
+synchronized boolean book(Room room, long s, long e, Booking b) {
+    TreeMap<Long, Booking> cal = calendars.get(room.id());
+    Map.Entry<Long, Booking> prev = cal.floorEntry(s), next = cal.ceilingEntry(s);
+    if (prev != null && prev.getValue().end() > s) return false;
+    if (next != null && next.getKey() < e) return false;
+    cal.put(s, b); return true;
+}
+```
+
+- **Finding a room** – filter rooms by capacity/features, then check availability; choose the smallest suitable room (Strategy).
+- **Concurrency** – lock per room (not global) so different rooms can be booked in parallel; in a distributed version, use a DB constraint/conditional insert.
+- Related classic question: "minimum number of rooms needed for a list of meetings" → sort start and end times and sweep, or use a min-heap of end times.
+
+</details>
+
+### 22. Design a text editor with undo and redo.
+
+<details>
+<summary>Answer</summary>
+
+Use the **Command pattern**: every edit is an object that knows how to apply and reverse itself.
+
+```java
+interface Command { void execute(); void undo(); }
+
+class InsertCommand implements Command {
+    private final StringBuilder doc; private final int pos; private final String text;
+    InsertCommand(StringBuilder doc, int pos, String text) { this.doc = doc; this.pos = pos; this.text = text; }
+    public void execute() { doc.insert(pos, text); }
+    public void undo() { doc.delete(pos, pos + text.length()); }
+}
+
+class Editor {
+    private final StringBuilder doc = new StringBuilder();
+    private final Deque<Command> undo = new ArrayDeque<>(), redo = new ArrayDeque<>();
+
+    void run(Command c) { c.execute(); undo.push(c); redo.clear(); }   // a new edit clears redo history
+    void undo() { if (!undo.isEmpty()) { Command c = undo.pop(); c.undo(); redo.push(c); } }
+    void redo() { if (!redo.isEmpty()) { Command c = redo.pop(); c.execute(); undo.push(c); } }
+}
+```
+
+Discuss: `DeleteCommand` must remember the deleted text; merging consecutive keystrokes into one undo step; limiting history size; the **Memento** alternative (snapshots – simpler but memory-heavy); and real editors' data structures (gap buffer, rope, piece table) for efficient inserts in large documents.
+
+</details>
+
+### 23. Implement a thread-safe bounded blocking queue (producer–consumer).
+
+<details>
+<summary>Answer</summary>
+
+```java
+class BoundedBlockingQueue<T> {
+    private final Object[] items; private int head, tail, count;
+    private final ReentrantLock lock = new ReentrantLock();
+    private final Condition notFull = lock.newCondition(), notEmpty = lock.newCondition();
+
+    BoundedBlockingQueue(int capacity) { items = new Object[capacity]; }
+
+    void put(T item) throws InterruptedException {
+        lock.lock();
+        try {
+            while (count == items.length) notFull.await();   // while, not if: spurious wake-ups
+            items[tail] = item; tail = (tail + 1) % items.length; count++;
+            notEmpty.signal();
+        } finally { lock.unlock(); }
+    }
+
+    @SuppressWarnings("unchecked")
+    T take() throws InterruptedException {
+        lock.lock();
+        try {
+            while (count == 0) notEmpty.await();
+            T item = (T) items[head]; items[head] = null; head = (head + 1) % items.length; count--;
+            notFull.signal();
+            return item;
+        } finally { lock.unlock(); }
+    }
+}
+```
+
+Key points: a circular buffer, one lock with two conditions, **`while` loops** around waits (spurious wake-ups and competing threads), `finally` to always unlock, and signalling the opposite condition. In production use `ArrayBlockingQueue`/`LinkedBlockingQueue`. Follow-ups: timeouts (`offer`/`poll` with time), shutdown signalling, and why bounded queues provide backpressure.
+
+</details>
+
 ---
 
 [⬅ Previous: Scenario-Based Questions](20-scenario-based.md) · [⬅ Back to index](../README.md) · [Next: AI/ML Systems & What's New ➡](22-ai-ml-whats-new.md)
